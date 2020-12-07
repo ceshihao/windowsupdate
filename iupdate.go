@@ -99,8 +99,10 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	if err != nil {
 		return nil, err
 	}
-	if iUpdate.Categories, err = toICategories(categoriesDisp); err != nil {
-		return nil, err
+	if categoriesDisp != nil {
+		if iUpdate.Categories, err = toICategories(categoriesDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	if iUpdate.Deadline, err = toTimeErr(oleutil.GetProperty(updateDisp, "Deadline")); err != nil {
@@ -127,8 +129,10 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	if err != nil {
 		return nil, err
 	}
-	if iUpdate.DownloadContents, err = toIUpdateDownloadContents(downloadContentsDisp); err != nil {
-		return nil, err
+	if downloadContentsDisp != nil {
+		if iUpdate.DownloadContents, err = toIUpdateDownloadContents(downloadContentsDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	if iUpdate.DownloadPriority, err = toInt32Err(oleutil.GetProperty(updateDisp, "DownloadPriority")); err != nil {
@@ -151,24 +155,30 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	if err != nil {
 		return nil, err
 	}
-	if iUpdate.Identity, err = toIUpdateIdentity(identityDisp); err != nil {
-		return nil, err
+	if identityDisp != nil {
+		if iUpdate.Identity, err = toIUpdateIdentity(identityDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	imageDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Image"))
 	if err != nil {
 		return nil, err
 	}
-	if iUpdate.Image, err = toIImageInformation(imageDisp); err != nil {
-		return nil, err
+	if imageDisp != nil {
+		if iUpdate.Image, err = toIImageInformation(imageDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	installationBehaviorDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "InstallationBehavior"))
 	if err != nil {
 		return nil, err
 	}
-	if iUpdate.InstallationBehavior, err = toIInstallationBehavior(installationBehaviorDisp); err != nil {
-		return nil, err
+	if installationBehaviorDisp != nil {
+		if iUpdate.InstallationBehavior, err = toIInstallationBehavior(installationBehaviorDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	if iUpdate.IsBeta, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsBeta")); err != nil {
@@ -259,8 +269,10 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	if err != nil {
 		return nil, err
 	}
-	if iUpdate.UninstallationBehavior, err = toIInstallationBehavior(uninstallationBehaviorDisp); err != nil {
-		return nil, err
+	if uninstallationBehaviorDisp != nil {
+		if iUpdate.UninstallationBehavior, err = toIInstallationBehavior(uninstallationBehaviorDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	if iUpdate.UninstallationNotes, err = toStringErr(oleutil.GetProperty(updateDisp, "UninstallationNotes")); err != nil {
@@ -272,4 +284,29 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	}
 
 	return iUpdate, nil
+}
+
+func toIUpdateCollection(updates []*IUpdate) (*ole.IDispatch, error) {
+	unknown, err := oleutil.CreateObject("Microsoft.Update.UpdateColl")
+	if err != nil {
+		return nil, err
+	}
+	coll, err := unknown.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return nil, err
+	}
+	for _, update := range updates {
+		_, err := oleutil.CallMethod(coll, "Add", update.disp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return coll, nil
+}
+
+// AcceptEula accepts the Microsoft Software License Terms that are associated with Windows Update. Administrators and power users can call this method.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdate-accepteula
+func (iUpdate *IUpdate) AcceptEula() error {
+	_, err := oleutil.CallMethod(iUpdate.disp, "AcceptEula")
+	return err
 }

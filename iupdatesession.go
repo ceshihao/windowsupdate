@@ -33,9 +33,10 @@ func toIUpdateSession(updateSessionDisp *ole.IDispatch) (*IUpdateSession, error)
 	if err != nil {
 		return nil, err
 	}
-
-	if iUpdateSession.WebProxy, err = toIWebProxy(webProxyDisp); err != nil {
-		return nil, err
+	if webProxyDisp != nil {
+		if iUpdateSession.WebProxy, err = toIWebProxy(webProxyDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	return iUpdateSession, nil
@@ -52,6 +53,26 @@ func NewUpdateSession() (*IUpdateSession, error) {
 		return nil, err
 	}
 	return toIUpdateSession(disp)
+}
+
+// CreateUpdateDownloader returns an IUpdateDownloader interface for this session.
+// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nf-wuapi-iupdatesession-createupdatedownloader
+func (iUpdateSession *IUpdateSession) CreateUpdateDownloader() (*IUpdateDownloader, error) {
+	updateDownloaderDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSession.disp, "CreateUpdateDownloader"))
+	if err != nil {
+		return nil, err
+	}
+	return toIUpdateDownloader(updateDownloaderDisp)
+}
+
+// CreateUpdateInstaller returns an IUpdateInstaller interface for this session.
+// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nf-wuapi-iupdatesession-createupdateinstaller
+func (iUpdateSession *IUpdateSession) CreateUpdateInstaller() (*IUpdateInstaller, error) {
+	updateInstallerDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSession.disp, "CreateUpdateInstaller"))
+	if err != nil {
+		return nil, err
+	}
+	return toIUpdateInstaller(updateInstallerDisp)
 }
 
 // CreateUpdateSearcher returns an IUpdateSearcher interface for this session.

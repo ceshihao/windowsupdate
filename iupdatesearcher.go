@@ -59,3 +59,28 @@ func (iUpdateSearcher *IUpdateSearcher) Search(criteria string) (*ISearchResult,
 	}
 	return toISearchResult(searchResultDisp)
 }
+
+// QueryHistory synchronously queries the computer for the history of the update events.
+// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-queryhistory
+func (iUpdateSearcher *IUpdateSearcher) QueryHistory(startIndex int32, count int32) ([]*IUpdateHistoryEntry, error) {
+	updateHistoryEntriesDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "QueryHistory", startIndex, count))
+	if err != nil {
+		return nil, err
+	}
+	return toIUpdateHistoryEntries(updateHistoryEntriesDisp)
+}
+
+// GetTotalHistoryCount returns the number of update events on the computer.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-gettotalhistorycount
+func (iUpdateSearcher *IUpdateSearcher) GetTotalHistoryCount() (int32, error) {
+	return toInt32Err(oleutil.CallMethod(iUpdateSearcher.disp, "GetTotalHistoryCount"))
+}
+
+// QueryHistoryAll synchronously queries the computer for the history of all update events.
+func (iUpdateSearcher *IUpdateSearcher) QueryHistoryAll() ([]*IUpdateHistoryEntry, error) {
+	count, err := iUpdateSearcher.GetTotalHistoryCount()
+	if err != nil {
+		return nil, err
+	}
+	return iUpdateSearcher.QueryHistory(0, count)
+}

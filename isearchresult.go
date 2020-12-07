@@ -29,24 +29,30 @@ func toISearchResult(searchResultDisp *ole.IDispatch) (*ISearchResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	if iSearchResult.RootCategories, err = toICategories(rootCategoriesDisp); err != nil {
-		return nil, err
+	if rootCategoriesDisp != nil {
+		if iSearchResult.RootCategories, err = toICategories(rootCategoriesDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	updatesDisp, err := toIDispatchErr(oleutil.GetProperty(searchResultDisp, "Updates"))
 	if err != nil {
 		return nil, err
 	}
-	if iSearchResult.Updates, err = toIUpdates(updatesDisp); err != nil {
-		return nil, err
+	if updatesDisp != nil {
+		if iSearchResult.Updates, err = toIUpdates(updatesDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	warningsDisp, err := toIDispatchErr(oleutil.GetProperty(searchResultDisp, "Warnings"))
 	if err != nil {
 		return nil, err
 	}
-	if iSearchResult.Warnings, err = toIUpdateExceptions(warningsDisp); err != nil {
-		return nil, err
+	if warningsDisp != nil {
+		if iSearchResult.Warnings, err = toIUpdateExceptions(warningsDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	return iSearchResult, nil

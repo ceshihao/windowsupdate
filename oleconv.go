@@ -74,27 +74,51 @@ func toTimeErr(result *ole.VARIANT, err error) (*time.Time, error) {
 }
 
 func variantToInt64(v *ole.VARIANT) int64 {
-	return v.Value().(int64)
+	value := v.Value()
+	if value == nil {
+		return 0
+	}
+	return value.(int64)
 }
 
 func variantToInt32(v *ole.VARIANT) int32 {
-	return v.Value().(int32)
+	value := v.Value()
+	if value == nil {
+		return 0
+	}
+	return value.(int32)
 }
 
 func variantToFloat64(v *ole.VARIANT) float64 {
-	return v.Value().(float64)
+	value := v.Value()
+	if value == nil {
+		return 0
+	}
+	return value.(float64)
 }
 
 func variantToFloat32(v *ole.VARIANT) float32 {
-	return v.Value().(float32)
+	value := v.Value()
+	if value == nil {
+		return 0
+	}
+	return value.(float32)
 }
 
 func variantToString(v *ole.VARIANT) string {
-	return v.Value().(string)
+	value := v.Value()
+	if value == nil {
+		return ""
+	}
+	return value.(string)
 }
 
 func variantToBool(v *ole.VARIANT) bool {
-	return v.Value().(bool)
+	value := v.Value()
+	if value == nil {
+		return false
+	}
+	return value.(bool)
 }
 
 func variantToTime(v *ole.VARIANT) *time.Time {
