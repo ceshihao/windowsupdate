@@ -1,0 +1,6 @@
+github.com/ceshihao/windowsupdate v0.0.0-20201208064528-6e1738a4e5d6 h1:egoOc18KfZqaYHf5vwG5KeOxii0EmqORXZok9/6XA1I=
+github.com/ceshihao/windowsupdate v0.0.0-20201208064528-6e1738a4e5d6/go.mod h1:ftABHPFeSH4MFoOCXgKxaw3YllfrTJ8zczyoqUxMZ4g=
+github.com/go-ole/go-ole v1.2.4 h1:nNBDSCOigTSiarFpYE9J/KtEA1IOW4CNeqT9TQDqCxI=
+github.com/go-ole/go-ole v1.2.4/go.mod h1:XCwSNxSkXRo4vlyPy93sltvi/qJq0jqQhjqQNIwKuxM=
+github.com/scjalliance/comshim v0.0.0-20190308082608-cf06d2532c4e h1:+/AzLkOdIXEPrAQtwAeWOBnPQ0BnYlBW0aCZmSb47u4=
+github.com/scjalliance/comshim v0.0.0-20190308082608-cf06d2532c4e/go.mod h1:9Tc1SKnfACJb9N7cw2eyuI6xzy845G7uZONBsi5uPEA=
