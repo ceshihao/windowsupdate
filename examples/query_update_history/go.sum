@@ -1,6 +1,9 @@
-github.com/ceshihao/windowsupdate v0.0.0-20201208075448-c124a6c28900 h1:eme4fR5UUVyvPCkix8/DTEsGIle+ToLc/2rSrOmiDro=
-github.com/ceshihao/windowsupdate v0.0.0-20201208075448-c124a6c28900/go.mod h1:ftABHPFeSH4MFoOCXgKxaw3YllfrTJ8zczyoqUxMZ4g=
-github.com/go-ole/go-ole v1.2.4 h1:nNBDSCOigTSiarFpYE9J/KtEA1IOW4CNeqT9TQDqCxI=
+github.com/ceshihao/windowsupdate v0.0.1 h1:AjNuzcMkxBcLm+4kntsDCFeeh/AhL3V1i9+7sAp0u4g=
+github.com/ceshihao/windowsupdate v0.0.1/go.mod h1:ftABHPFeSH4MFoOCXgKxaw3YllfrTJ8zczyoqUxMZ4g=
 github.com/go-ole/go-ole v1.2.4/go.mod h1:XCwSNxSkXRo4vlyPy93sltvi/qJq0jqQhjqQNIwKuxM=
+github.com/go-ole/go-ole v1.2.6 h1:/Fpf6oFPoeFik9ty7siob0G6Ke8QvQEuVcuChpwXzpY=
+github.com/go-ole/go-ole v1.2.6/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
 github.com/scjalliance/comshim v0.0.0-20190308082608-cf06d2532c4e h1:+/AzLkOdIXEPrAQtwAeWOBnPQ0BnYlBW0aCZmSb47u4=
 github.com/scjalliance/comshim v0.0.0-20190308082608-cf06d2532c4e/go.mod h1:9Tc1SKnfACJb9N7cw2eyuI6xzy845G7uZONBsi5uPEA=
+golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3 h1:7TYNF4UdlohbFwpNH04CoPMp1cHUZgO1Ebq5r2hIjfo=
+golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
