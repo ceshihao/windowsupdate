@@ -100,7 +100,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.BundledUpdates, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "BundledUpdates")); err != nil {
+	if iUpdate.BundledUpdates, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "BundledUpdates"))); err != nil {
 		return nil, err
 	}
 
@@ -218,11 +218,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.KBArticleIDs, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "KBArticleIDs")); err != nil {
+	if iUpdate.KBArticleIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "KBArticleIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.Languages, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "Languages")); err != nil {
+	if iUpdate.Languages, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "Languages"))); err != nil {
 		return nil, err
 	}
 
@@ -238,7 +238,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.MoreInfoUrls, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "MoreInfoUrls")); err != nil {
+	if iUpdate.MoreInfoUrls, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "MoreInfoUrls"))); err != nil {
 		return nil, err
 	}
 
@@ -262,11 +262,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.SecurityBulletinIDs, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "SecurityBulletinIDs")); err != nil {
+	if iUpdate.SecurityBulletinIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "SecurityBulletinIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.SupersededUpdateIDs, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "SupersededUpdateIDs")); err != nil {
+	if iUpdate.SupersededUpdateIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "SupersededUpdateIDs"))); err != nil {
 		return nil, err
 	}
 
@@ -292,7 +292,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.UninstallationSteps, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "UninstallationSteps")); err != nil {
+	if iUpdate.UninstallationSteps, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "UninstallationSteps"))); err != nil {
 		return nil, err
 	}
 
