@@ -25,7 +25,7 @@ import (
 type IUpdate struct {
 	disp                            *ole.IDispatch
 	AutoSelectOnWebSites            bool
-	BundledUpdates                  []string
+	BundledUpdates                  []*IUpdateIdentity
 	CanRequireSource                bool
 	Categories                      []*ICategory
 	Deadline                        *time.Time
@@ -90,6 +90,38 @@ func toIUpdates(updatesDisp *ole.IDispatch) ([]*IUpdate, error) {
 	return updates, nil
 }
 
+// toIUpdates takes a IUpdateCollection and returns the a
+// []*IUpdateIdentity of the contained IUpdates. This is *not* recursive, though possible should be
+func toIUpdatesIdentities(updatesDisp *ole.IDispatch) ([]*IUpdateIdentity, error) {
+	if updatesDisp == nil {
+		return nil, nil
+	}
+
+	count, err := toInt32Err(oleutil.GetProperty(updatesDisp, "Count"))
+	if err != nil {
+		return nil, err
+	}
+
+	identities := make([]*IUpdateIdentity, count)
+	for i := 0; i < int(count); i++ {
+		updateDisp, err := toIDispatchErr(oleutil.GetProperty(updatesDisp, "Item", i))
+		if err != nil {
+			return nil, err
+		}
+
+		identityDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Identity"))
+		if err != nil {
+			return nil, err
+		}
+		if identityDisp != nil {
+			if identities[i], err = toIUpdateIdentity(identityDisp); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return identities, nil
+}
+
 func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	var err error
 	iUpdate := &IUpdate{
@@ -100,8 +132,14 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.BundledUpdates, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "BundledUpdates"))); err != nil {
+	bundledUpdatesDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "BundledUpdates"))
+	if err != nil {
 		return nil, err
+	}
+	if bundledUpdatesDisp != nil {
+		if iUpdate.BundledUpdates, err = toIUpdatesIdentities(bundledUpdatesDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	if iUpdate.CanRequireSource, err = toBoolErr(oleutil.GetProperty(updateDisp, "CanRequireSource")); err != nil {
