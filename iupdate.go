@@ -21,7 +21,7 @@ import (
 )
 
 // IUpdate contains the properties and methods that are available to an update.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdate
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdate
 type IUpdate struct {
 	disp                            *ole.IDispatch
 	AutoSelectOnWebSites            bool
@@ -31,10 +31,10 @@ type IUpdate struct {
 	Deadline                        *time.Time
 	DeltaCompressedContentAvailable bool
 	DeltaCompressedContentPreferred bool
-	DeploymentAction                int32 // enum https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/ne-wuapi-deploymentaction
+	DeploymentAction                int32 // enum https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-deploymentaction
 	Description                     string
 	DownloadContents                []*IUpdateDownloadContent
-	DownloadPriority                int32 // enum https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/ne-wuapi-downloadpriority
+	DownloadPriority                int32 // enum https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-downloadpriority
 	EulaAccepted                    bool
 	EulaText                        string
 	HandlerID                       string

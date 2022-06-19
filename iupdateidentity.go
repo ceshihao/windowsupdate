@@ -19,7 +19,7 @@ import (
 )
 
 // IUpdateIdentity represents the unique identifier of an update.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdateidentity
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdateidentity
 type IUpdateIdentity struct {
 	disp           *ole.IDispatch
 	RevisionNumber int32

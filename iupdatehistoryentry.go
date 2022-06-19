@@ -21,7 +21,7 @@ import (
 )
 
 // IUpdateHistoryEntry represents the recorded history of an update.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdatehistoryentry
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdatehistoryentry
 type IUpdateHistoryEntry struct {
 	disp                *ole.IDispatch
 	ClientApplicationID string

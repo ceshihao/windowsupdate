@@ -18,7 +18,7 @@ import (
 )
 
 // IUpdateDownloadContent represents the download content of an update.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdatedownloadcontent
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdatedownloadcontent
 type IUpdateDownloadContent struct {
 	disp        *ole.IDispatch
 	DownloadUrl string
