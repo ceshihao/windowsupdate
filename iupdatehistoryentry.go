@@ -113,7 +113,7 @@ func toIUpdateHistoryEntry(updateHistoryEntryDisp *ole.IDispatch) (*IUpdateHisto
 		return nil, err
 	}
 
-	if iUpdateHistoryEntry.UninstallationSteps, err = toStringSliceErr(oleutil.GetProperty(updateHistoryEntryDisp, "UninstallationSteps")); err != nil {
+	if iUpdateHistoryEntry.UninstallationSteps, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateHistoryEntryDisp, "UninstallationSteps"))); err != nil {
 		return nil, err
 	}
 
