@@ -19,7 +19,7 @@ import (
 )
 
 // IUpdateSearcher searches for updates on a server.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdatesearcher
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdatesearcher
 type IUpdateSearcher struct {
 	disp                                *ole.IDispatch
 	CanAutomaticallyUpgradeService      bool
@@ -64,7 +64,7 @@ func toIUpdateSearcher(updateSearcherDisp *ole.IDispatch) (*IUpdateSearcher, err
 }
 
 // Search performs a synchronous search for updates. The search uses the search options that are currently configured.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-search
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-search
 func (iUpdateSearcher *IUpdateSearcher) Search(criteria string) (*ISearchResult, error) {
 	searchResultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "Search", criteria))
 	if err != nil {
@@ -74,7 +74,7 @@ func (iUpdateSearcher *IUpdateSearcher) Search(criteria string) (*ISearchResult,
 }
 
 // QueryHistory synchronously queries the computer for the history of the update events.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-queryhistory
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-queryhistory
 func (iUpdateSearcher *IUpdateSearcher) QueryHistory(startIndex int32, count int32) ([]*IUpdateHistoryEntry, error) {
 	updateHistoryEntriesDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "QueryHistory", startIndex, count))
 	if err != nil {

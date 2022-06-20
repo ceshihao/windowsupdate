@@ -18,7 +18,7 @@ import (
 )
 
 // IWebProxy contains the HTTP proxy settings.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iwebproxy
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iwebproxy
 type IWebProxy struct {
 	disp               *ole.Dispatch
 	Address            string

@@ -19,10 +19,10 @@ import (
 )
 
 // ISearchResult represents the result of a search.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-isearchresult
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-isearchresult
 type ISearchResult struct {
 	disp           *ole.IDispatch
-	ResultCode     int32 // enum https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/ne-wuapi-operationresultcode
+	ResultCode     int32 // enum https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-operationresultcode
 	RootCategories []*ICategory
 	Updates        []*IUpdate
 	Warnings       []*IUpdateException

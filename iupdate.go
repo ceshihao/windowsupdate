@@ -21,20 +21,20 @@ import (
 )
 
 // IUpdate contains the properties and methods that are available to an update.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdate
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdate
 type IUpdate struct {
 	disp                            *ole.IDispatch
 	AutoSelectOnWebSites            bool
-	BundledUpdates                  []string
+	BundledUpdates                  []*IUpdateIdentity
 	CanRequireSource                bool
 	Categories                      []*ICategory
 	Deadline                        *time.Time
 	DeltaCompressedContentAvailable bool
 	DeltaCompressedContentPreferred bool
-	DeploymentAction                int32 // enum https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/ne-wuapi-deploymentaction
+	DeploymentAction                int32 // enum https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-deploymentaction
 	Description                     string
 	DownloadContents                []*IUpdateDownloadContent
-	DownloadPriority                int32 // enum https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/ne-wuapi-downloadpriority
+	DownloadPriority                int32 // enum https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-downloadpriority
 	EulaAccepted                    bool
 	EulaText                        string
 	HandlerID                       string
@@ -90,6 +90,38 @@ func toIUpdates(updatesDisp *ole.IDispatch) ([]*IUpdate, error) {
 	return updates, nil
 }
 
+// toIUpdates takes a IUpdateCollection and returns the a
+// []*IUpdateIdentity of the contained IUpdates. This is *not* recursive, though possible should be
+func toIUpdatesIdentities(updatesDisp *ole.IDispatch) ([]*IUpdateIdentity, error) {
+	if updatesDisp == nil {
+		return nil, nil
+	}
+
+	count, err := toInt32Err(oleutil.GetProperty(updatesDisp, "Count"))
+	if err != nil {
+		return nil, err
+	}
+
+	identities := make([]*IUpdateIdentity, count)
+	for i := 0; i < int(count); i++ {
+		updateDisp, err := toIDispatchErr(oleutil.GetProperty(updatesDisp, "Item", i))
+		if err != nil {
+			return nil, err
+		}
+
+		identityDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Identity"))
+		if err != nil {
+			return nil, err
+		}
+		if identityDisp != nil {
+			if identities[i], err = toIUpdateIdentity(identityDisp); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return identities, nil
+}
+
 func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 	var err error
 	iUpdate := &IUpdate{
@@ -100,8 +132,14 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.BundledUpdates, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "BundledUpdates")); err != nil {
+	bundledUpdatesDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "BundledUpdates"))
+	if err != nil {
 		return nil, err
+	}
+	if bundledUpdatesDisp != nil {
+		if iUpdate.BundledUpdates, err = toIUpdatesIdentities(bundledUpdatesDisp); err != nil {
+			return nil, err
+		}
 	}
 
 	if iUpdate.CanRequireSource, err = toBoolErr(oleutil.GetProperty(updateDisp, "CanRequireSource")); err != nil {
@@ -218,11 +256,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.KBArticleIDs, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "KBArticleIDs")); err != nil {
+	if iUpdate.KBArticleIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "KBArticleIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.Languages, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "Languages")); err != nil {
+	if iUpdate.Languages, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "Languages"))); err != nil {
 		return nil, err
 	}
 
@@ -238,7 +276,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.MoreInfoUrls, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "MoreInfoUrls")); err != nil {
+	if iUpdate.MoreInfoUrls, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "MoreInfoUrls"))); err != nil {
 		return nil, err
 	}
 
@@ -262,11 +300,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.SecurityBulletinIDs, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "SecurityBulletinIDs")); err != nil {
+	if iUpdate.SecurityBulletinIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "SecurityBulletinIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.SupersededUpdateIDs, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "SupersededUpdateIDs")); err != nil {
+	if iUpdate.SupersededUpdateIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "SupersededUpdateIDs"))); err != nil {
 		return nil, err
 	}
 
@@ -292,7 +330,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
-	if iUpdate.UninstallationSteps, err = toStringSliceErr(oleutil.GetProperty(updateDisp, "UninstallationSteps")); err != nil {
+	if iUpdate.UninstallationSteps, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "UninstallationSteps"))); err != nil {
 		return nil, err
 	}
 

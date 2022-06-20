@@ -26,17 +26,6 @@ func toIDispatchErr(result *ole.VARIANT, err error) (*ole.IDispatch, error) {
 	return result.ToIDispatch(), nil
 }
 
-func toStringSliceErr(result *ole.VARIANT, err error) ([]string, error) {
-	if err != nil {
-		return nil, err
-	}
-	array := result.ToArray()
-	if array == nil {
-		return nil, nil
-	}
-	return array.ToStringArray(), nil
-}
-
 func toInt64Err(result *ole.VARIANT, err error) (int64, error) {
 	if err != nil {
 		return 0, err

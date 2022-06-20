@@ -21,7 +21,7 @@ import (
 )
 
 // IUpdateHistoryEntry represents the recorded history of an update.
-// https://docs.microsoft.com/zh-cn/windows/win32/api/wuapi/nn-wuapi-iupdatehistoryentry
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdatehistoryentry
 type IUpdateHistoryEntry struct {
 	disp                *ole.IDispatch
 	ClientApplicationID string
@@ -113,7 +113,7 @@ func toIUpdateHistoryEntry(updateHistoryEntryDisp *ole.IDispatch) (*IUpdateHisto
 		return nil, err
 	}
 
-	if iUpdateHistoryEntry.UninstallationSteps, err = toStringSliceErr(oleutil.GetProperty(updateHistoryEntryDisp, "UninstallationSteps")); err != nil {
+	if iUpdateHistoryEntry.UninstallationSteps, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateHistoryEntryDisp, "UninstallationSteps"))); err != nil {
 		return nil, err
 	}
 
