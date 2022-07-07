@@ -23,7 +23,7 @@ func toIDispatchErr(result *ole.VARIANT, err error) (*ole.IDispatch, error) {
 	if err != nil {
 		return nil, err
 	}
-	return result.ToIDispatch(), nil
+	return variantToIDispatch(result), nil
 }
 
 func toInt64Err(result *ole.VARIANT, err error) (int64, error) {
@@ -73,6 +73,13 @@ func toTimeErr(result *ole.VARIANT, err error) (*time.Time, error) {
 		return nil, err
 	}
 	return variantToTime(result), nil
+}
+
+func variantToIDispatch(v *ole.VARIANT) *ole.IDispatch {
+	if v == nil {
+		return nil
+	}
+	return v.ToIDispatch()
 }
 
 func variantToInt64(v *ole.VARIANT) int64 {
