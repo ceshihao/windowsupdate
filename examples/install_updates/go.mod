@@ -2,6 +2,8 @@ module github.com/ceshihao/windowsupdate/examples/install_updates
 
 go 1.17
 
+replace github.com/ceshihao/windowsupdate => ../../../windowsupdate
+
 require (
 	github.com/ceshihao/windowsupdate v0.0.2
 	github.com/go-ole/go-ole v1.2.6

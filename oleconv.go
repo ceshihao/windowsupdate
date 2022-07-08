@@ -76,7 +76,8 @@ func toTimeErr(result *ole.VARIANT, err error) (*time.Time, error) {
 }
 
 func variantToIDispatch(v *ole.VARIANT) *ole.IDispatch {
-	if v == nil {
+	value := v.Value()
+	if value == nil {
 		return nil
 	}
 	return v.ToIDispatch()
