@@ -46,6 +46,21 @@ func toIDownloadResult(downloadResultDisp *ole.IDispatch) (*IDownloadResult, err
 // GetUpdateResult returns an IUpdateDownloadResult interface that contains the download information for a specified update.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-idownloadresult-getupdateresult
 func (iDownloadResult *IDownloadResult) GetUpdateResult(updateIndex int32) (*IUpdateDownloadResult, error) {
-	// TODO
-	return nil, nil
+	var err error
+	iUpdateDownloadResult := &IUpdateDownloadResult{
+		disp: iDownloadResult.disp,
+	}
+	updatesDisp, err := toIDispatchErr(oleutil.CallMethod(iDownloadResult.disp, "GetUpdateResult", updateIndex))
+	if err != nil {
+		return nil, err
+	}
+
+	if iUpdateDownloadResult.HResult, err = toInt32Err(oleutil.GetProperty(updatesDisp, "HResult")); err != nil {
+		return nil, err
+	}
+
+	if iUpdateDownloadResult.ResultCode, err = toInt32Err(oleutil.GetProperty(updatesDisp, "ResultCode")); err != nil {
+		return nil, err
+	}
+	return iUpdateDownloadResult, nil
 }
