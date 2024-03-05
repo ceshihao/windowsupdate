@@ -47,3 +47,25 @@ func toIInstallationResult(installationResultDisp *ole.IDispatch) (*IInstallatio
 
 	return iInstallationResult, nil
 }
+
+// GetUpdateResult returns an IInstallationResult interface that contains the installation information for a specified update.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iinstallationresult
+func (iInstallationResult *IInstallationResult) GetUpdateResult(updateIndex int32) (*IInstallationResult, error) {
+	var err error
+	iUpdateInstallationResult := &IInstallationResult{
+		disp: iInstallationResult.disp,
+	}
+	updatesDisp, err := toIDispatchErr(oleutil.CallMethod(iInstallationResult.disp, "GetUpdateResult", updateIndex))
+	if err != nil {
+		return nil, err
+	}
+
+	if iUpdateInstallationResult.HResult, err = toInt32Err(oleutil.GetProperty(updatesDisp, "HResult")); err != nil {
+		return nil, err
+	}
+
+	if iUpdateInstallationResult.ResultCode, err = toInt32Err(oleutil.GetProperty(updatesDisp, "ResultCode")); err != nil {
+		return nil, err
+	}
+	return iUpdateInstallationResult, nil
+}
