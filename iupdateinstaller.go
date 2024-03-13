@@ -26,6 +26,7 @@ type IUpdateInstaller struct {
 	ClientApplicationID string
 	IsBusy              bool
 	IsForced            bool
+	ForceQuiet          bool
 	// ParentHwnd                       HWND
 	// ParentWindow                     IUnknown
 	RebootRequiredBeforeInstallation bool
@@ -54,6 +55,10 @@ func toIUpdateInstaller(updateInstallerDisp *ole.IDispatch) (*IUpdateInstaller, 
 		return nil, err
 	}
 
+	if iUpdateInstaller.ForceQuiet, err = toBoolErr(oleutil.GetProperty(updateInstallerDisp, "ForceQuiet")); err != nil {
+		return nil, err
+	}
+	
 	if iUpdateInstaller.RebootRequiredBeforeInstallation, err = toBoolErr(oleutil.GetProperty(updateInstallerDisp, "RebootRequiredBeforeInstallation")); err != nil {
 		return nil, err
 	}
@@ -87,4 +92,36 @@ func (iUpdateInstaller *IUpdateInstaller) Install(updates []*IUpdate) (*IInstall
 		return nil, err
 	}
 	return toIInstallationResult(installationResultDisp)
+}
+
+// Finalizes updates that were previously staged or installed.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller4-commit
+func (iUpdateInstaller *IUpdateInstaller) Commit(dwFlags int32) error {
+	_, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "Commit", dwFlags))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Sets a Boolean value that indicates whether Windows Installer is forced to install the updates without user interaction.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-put_forcequiet
+func (iUpdateInstaller *IUpdateInstaller) PutForceQuiet(value bool) error {
+	_, err := toIDispatchErr(oleutil.PutProperty(iUpdateInstaller.disp, "ForceQuiet", value))
+	if err != nil {
+		return err
+	}
+	iUpdateInstaller.ForceQuiet = value
+	return nil
+}
+
+// Sets a Boolean value that indicates whether to forcibly install or uninstall an update.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller-put_isforced
+func (iUpdateInstaller *IUpdateInstaller) PutIsForced(value bool) error {
+	_, err := toIDispatchErr(oleutil.PutProperty(iUpdateInstaller.disp, "IsForced", value))
+	if err != nil {
+		return err
+	}
+	iUpdateInstaller.IsForced = value
+	return nil
 }
