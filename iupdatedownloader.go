@@ -19,7 +19,7 @@ import (
 )
 
 // IUpdateDownloader downloads updates from the server.
-// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdatedownloaders
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdatedownloader
 type IUpdateDownloader struct {
 	disp                *ole.IDispatch
 	ClientApplicationID string

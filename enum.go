@@ -23,3 +23,73 @@ const (
 	OperationResultCodeOrcFailed
 	OperationResultCodeOrcAborted
 )
+
+// UpdateOperation defines the types of operations that can be performed on updates.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updateoperation
+const (
+	UpdateOperationUoInstallation int32 = iota + 1
+	UpdateOperationUoUninstallation
+)
+
+// UpdateType defines the types of updates.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updatetype
+const (
+	UpdateTypeUtSoftware int32 = iota + 1
+	UpdateTypeUtDriver
+)
+
+// DeploymentAction defines the deployment actions for updates.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-deploymentaction
+const (
+	DeploymentActionDaNone int32 = iota
+	DeploymentActionDaInstallation
+	DeploymentActionDaUninstallation
+	DeploymentActionDaDetection
+)
+
+// DownloadPriority defines the download priority levels.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-downloadpriority
+const (
+	DownloadPriorityDpLow int32 = iota
+	DownloadPriorityDpNormal
+	DownloadPriorityDpHigh
+	DownloadPriorityDpExtraHigh
+)
+
+// ServerSelection defines the server selection options.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-serverselection
+const (
+	ServerSelectionSsDefault int32 = iota
+	ServerSelectionSsManagedServer
+	ServerSelectionSsWindowsUpdate
+	ServerSelectionSsOthers
+)
+
+// UpdateLockdownOption defines the update lockdown options.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updatelockdownoption
+const (
+	UpdateLockdownOptionUloForWebsiteAccess int32 = 1 << iota
+)
+
+// AutomaticUpdatesNotificationLevel defines the automatic updates notification levels.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-automaticupdatesnotificationlevel
+const (
+	AutomaticUpdatesNotificationLevelAunlNotConfigured int32 = iota
+	AutomaticUpdatesNotificationLevelAunlDisabled
+	AutomaticUpdatesNotificationLevelAunlNotifyBeforeDownload
+	AutomaticUpdatesNotificationLevelAunlNotifyBeforeInstallation
+	AutomaticUpdatesNotificationLevelAunlScheduledInstallation
+)
+
+// AutomaticUpdatesScheduledInstallationDay defines the days for scheduled installation.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-automaticupdatesscheduledinstallationday
+const (
+	AutomaticUpdatesScheduledInstallationDayAusidEveryDay int32 = iota
+	AutomaticUpdatesScheduledInstallationDayAusidEverySunday
+	AutomaticUpdatesScheduledInstallationDayAusidEveryMonday
+	AutomaticUpdatesScheduledInstallationDayAusidEveryTuesday
+	AutomaticUpdatesScheduledInstallationDayAusidEveryWednesday
+	AutomaticUpdatesScheduledInstallationDayAusidEveryThursday
+	AutomaticUpdatesScheduledInstallationDayAusidEveryFriday
+	AutomaticUpdatesScheduledInstallationDayAusidEverySaturday
+)
