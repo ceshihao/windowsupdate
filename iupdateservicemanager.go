@@ -134,4 +134,4 @@ func (iUpdateServiceManager *IUpdateServiceManager) SetDefaultAUScheduledInstall
 func (iUpdateServiceManager *IUpdateServiceManager) UnregisterServiceWithAU(serviceID string) error {
 	_, err := oleutil.CallMethod(iUpdateServiceManager.disp, "UnregisterServiceWithAU", serviceID)
 	return err
-} 
+}

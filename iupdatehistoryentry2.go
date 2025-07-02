@@ -113,4 +113,4 @@ func (iUpdateHistoryEntry2 *IUpdateHistoryEntry2) GetTitle() (string, error) {
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatehistoryentry2-get_unmappedresultcode
 func (iUpdateHistoryEntry2 *IUpdateHistoryEntry2) GetUnmappedResultCode() (int32, error) {
 	return toInt32Err(oleutil.GetProperty(iUpdateHistoryEntry2.disp, "UnmappedResultCode"))
-} 
+}

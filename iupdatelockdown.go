@@ -57,4 +57,4 @@ func (iUpdateLockdown *IUpdateLockdown) GetLockdownPolicy() (int32, error) {
 func (iUpdateLockdown *IUpdateLockdown) SetLockdownPolicy(policy int32) error {
 	_, err := oleutil.CallMethod(iUpdateLockdown.disp, "SetLockdownPolicy", policy)
 	return err
-} 
+}

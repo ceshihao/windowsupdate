@@ -46,14 +46,14 @@ func NewUpdateSession2() (*IUpdateSession2, error) {
 	return toIUpdateSession2(disp)
 }
 
-// CreateUpdateDownloader returns an IUpdateDownloader2 interface for this session.
+// CreateUpdateDownloader returns an IUpdateDownloader interface for this session.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesession2-createupdatedownloader
-func (iUpdateSession2 *IUpdateSession2) CreateUpdateDownloader() (*IUpdateDownloader2, error) {
+func (iUpdateSession2 *IUpdateSession2) CreateUpdateDownloader() (*IUpdateDownloader, error) {
 	updateDownloaderDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSession2.disp, "CreateUpdateDownloader"))
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateDownloader2(updateDownloaderDisp)
+	return toIUpdateDownloader(updateDownloaderDisp)
 }
 
 // CreateUpdateInstaller returns an IUpdateInstaller2 interface for this session.
@@ -120,4 +120,4 @@ func (iUpdateSession2 *IUpdateSession2) GetWebProxy() (*IWebProxy, error) {
 func (iUpdateSession2 *IUpdateSession2) SetWebProxy(webProxy *IWebProxy) error {
 	_, err := oleutil.PutProperty(iUpdateSession2.disp, "WebProxy", webProxy.disp)
 	return err
-} 
+}

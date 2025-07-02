@@ -24,15 +24,6 @@ type IUpdateCollection struct {
 	disp *ole.IDispatch
 }
 
-func toIUpdateCollection(updateCollectionDisp *ole.IDispatch) (*IUpdateCollection, error) {
-	if updateCollectionDisp == nil {
-		return nil, nil
-	}
-	return &IUpdateCollection{
-		disp: updateCollectionDisp,
-	}, nil
-}
-
 // NewUpdateCollection creates a new IUpdateCollection interface.
 func NewUpdateCollection() (*IUpdateCollection, error) {
 	unknown, err := oleutil.CreateObject("Microsoft.Update.UpdateCollection")
@@ -43,17 +34,13 @@ func NewUpdateCollection() (*IUpdateCollection, error) {
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateCollection(disp)
+	return &IUpdateCollection{disp: disp}, nil
 }
 
 // Add adds an update to the collection.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatecollection-add
 func (iUpdateCollection *IUpdateCollection) Add(update *IUpdate) error {
-	updateDisp, err := toIUpdateCollection([]*IUpdate{update})
-	if err != nil {
-		return err
-	}
-	_, err = oleutil.CallMethod(iUpdateCollection.disp, "Add", updateDisp)
+	_, err := oleutil.CallMethod(iUpdateCollection.disp, "Add", update.disp)
 	return err
 }
 
@@ -90,4 +77,4 @@ func (iUpdateCollection *IUpdateCollection) Remove(index int32) error {
 // GetUpdates returns all updates in the collection as a slice.
 func (iUpdateCollection *IUpdateCollection) GetUpdates() ([]*IUpdate, error) {
 	return toIUpdates(iUpdateCollection.disp)
-} 
+}

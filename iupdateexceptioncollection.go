@@ -65,4 +65,4 @@ func (iUpdateExceptionCollection *IUpdateExceptionCollection) GetExceptions() ([
 		exceptions = append(exceptions, exception)
 	}
 	return exceptions, nil
-} 
+}

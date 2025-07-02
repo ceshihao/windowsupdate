@@ -58,7 +58,7 @@ func toIUpdateInstaller(updateInstallerDisp *ole.IDispatch) (*IUpdateInstaller, 
 	if iUpdateInstaller.ForceQuiet, err = toBoolErr(oleutil.GetProperty(updateInstallerDisp, "ForceQuiet")); err != nil {
 		return nil, err
 	}
-	
+
 	if iUpdateInstaller.RebootRequiredBeforeInstallation, err = toBoolErr(oleutil.GetProperty(updateInstallerDisp, "RebootRequiredBeforeInstallation")); err != nil {
 		return nil, err
 	}

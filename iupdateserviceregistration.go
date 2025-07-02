@@ -21,8 +21,8 @@ import (
 // IUpdateServiceRegistration represents an update service registration.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdateserviceregistration
 type IUpdateServiceRegistration struct {
-	disp                *ole.IDispatch
-	AuthorizationCabPath string
+	disp                        *ole.IDispatch
+	AuthorizationCabPath        string
 	IsPendingRegistrationWithAU bool
 	IsRegisteredWithAU          bool
 	ServiceID                   string
@@ -73,4 +73,4 @@ func (iUpdateServiceRegistration *IUpdateServiceRegistration) GetPropertyValue(p
 func (iUpdateServiceRegistration *IUpdateServiceRegistration) SetPropertyValue(propertyName string, propertyValue interface{}) error {
 	_, err := oleutil.CallMethod(iUpdateServiceRegistration.disp, "SetPropertyValue", propertyName, propertyValue)
 	return err
-} 
+}

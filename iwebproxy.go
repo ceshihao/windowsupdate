@@ -21,7 +21,7 @@ import (
 // IWebProxy contains the HTTP proxy settings.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iwebproxy
 type IWebProxy struct {
-	disp               *ole.Dispatch
+	disp               *ole.IDispatch
 	Address            string
 	AutoDetect         bool
 	BypassList         []string
@@ -49,7 +49,7 @@ func toIWebProxy(webProxyDisp *ole.IDispatch) (*IWebProxy, error) {
 		return nil, err
 	}
 	if bypassListDisp != nil {
-		if proxy.BypassList, err = toStringCollection(bypassListDisp); err != nil {
+		if proxy.BypassList, err = iStringCollectionToStringArrayErr(bypassListDisp, nil); err != nil {
 			return nil, err
 		}
 	}

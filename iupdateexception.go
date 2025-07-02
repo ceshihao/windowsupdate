@@ -57,3 +57,22 @@ func toIUpdateExceptions(updateExceptionsDisp *ole.IDispatch) ([]*IUpdateExcepti
 	}
 	return exceptions, nil
 }
+
+// 单个对象转换
+func toIUpdateException(exceptionDisp *ole.IDispatch) (*IUpdateException, error) {
+	if exceptionDisp == nil {
+		return nil, nil
+	}
+	var err error
+	exception := &IUpdateException{disp: exceptionDisp}
+	if exception.Context, err = toInt32Err(oleutil.GetProperty(exceptionDisp, "Context")); err != nil {
+		return nil, err
+	}
+	if exception.HResult, err = toInt64Err(oleutil.GetProperty(exceptionDisp, "HResult")); err != nil {
+		return nil, err
+	}
+	if exception.Message, err = toStringErr(oleutil.GetProperty(exceptionDisp, "Message")); err != nil {
+		return nil, err
+	}
+	return exception, nil
+}

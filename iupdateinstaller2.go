@@ -35,47 +35,47 @@ func toIUpdateInstaller2(updateInstaller2Disp *ole.IDispatch) (*IUpdateInstaller
 
 // BeginInstall begins an asynchronous installation operation.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-begininstall
-func (iUpdateInstaller2 *IUpdateInstaller2) BeginInstall(onProgressChanged interface{}, onCompleted interface{}, state interface{}) (*IUpdateInstallResult, error) {
+func (iUpdateInstaller2 *IUpdateInstaller2) BeginInstall(onProgressChanged interface{}, onCompleted interface{}, state interface{}) (*IInstallationResult, error) {
 	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller2.disp, "BeginInstall", onProgressChanged, onCompleted, state))
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateInstallResult(resultDisp)
+	return toIInstallationResult(resultDisp)
 }
 
 // BeginUninstall begins an asynchronous uninstallation operation.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-beginuninstall
-func (iUpdateInstaller2 *IUpdateInstaller2) BeginUninstall(onProgressChanged interface{}, onCompleted interface{}, state interface{}) (*IUpdateInstallResult, error) {
+func (iUpdateInstaller2 *IUpdateInstaller2) BeginUninstall(onProgressChanged interface{}, onCompleted interface{}, state interface{}) (*IInstallationResult, error) {
 	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller2.disp, "BeginUninstall", onProgressChanged, onCompleted, state))
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateInstallResult(resultDisp)
+	return toIInstallationResult(resultDisp)
 }
 
 // EndInstall ends an asynchronous installation operation.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-endinstall
-func (iUpdateInstaller2 *IUpdateInstaller2) EndInstall(asyncResult *IUpdateInstallResult) (*IUpdateInstallResult, error) {
+func (iUpdateInstaller2 *IUpdateInstaller2) EndInstall(asyncResult *IInstallationResult) (*IInstallationResult, error) {
 	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller2.disp, "EndInstall", asyncResult))
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateInstallResult(resultDisp)
+	return toIInstallationResult(resultDisp)
 }
 
 // EndUninstall ends an asynchronous uninstallation operation.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-enduninstall
-func (iUpdateInstaller2 *IUpdateInstaller2) EndUninstall(asyncResult *IUpdateInstallResult) (*IUpdateInstallResult, error) {
+func (iUpdateInstaller2 *IUpdateInstaller2) EndUninstall(asyncResult *IInstallationResult) (*IInstallationResult, error) {
 	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller2.disp, "EndUninstall", asyncResult))
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateInstallResult(resultDisp)
+	return toIInstallationResult(resultDisp)
 }
 
 // Install installs updates synchronously.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-install
-func (iUpdateInstaller2 *IUpdateInstaller2) Install(updates []*IUpdate) (*IUpdateInstallResult, error) {
+func (iUpdateInstaller2 *IUpdateInstaller2) Install(updates []*IUpdate) (*IInstallationResult, error) {
 	updatesDisp, err := toIUpdateCollection(updates)
 	if err != nil {
 		return nil, err
@@ -84,12 +84,12 @@ func (iUpdateInstaller2 *IUpdateInstaller2) Install(updates []*IUpdate) (*IUpdat
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateInstallResult(resultDisp)
+	return toIInstallationResult(resultDisp)
 }
 
 // Uninstall uninstalls updates synchronously.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller2-uninstall
-func (iUpdateInstaller2 *IUpdateInstaller2) Uninstall(updates []*IUpdate) (*IUpdateInstallResult, error) {
+func (iUpdateInstaller2 *IUpdateInstaller2) Uninstall(updates []*IUpdate) (*IInstallationResult, error) {
 	updatesDisp, err := toIUpdateCollection(updates)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (iUpdateInstaller2 *IUpdateInstaller2) Uninstall(updates []*IUpdate) (*IUpd
 	if err != nil {
 		return nil, err
 	}
-	return toIUpdateInstallResult(resultDisp)
+	return toIInstallationResult(resultDisp)
 }
 
 // GetAllowSourcePrompts gets whether source prompts are allowed.
@@ -146,4 +146,4 @@ func (iUpdateInstaller2 *IUpdateInstaller2) SetUpdates(updates []*IUpdate) error
 	}
 	_, err = oleutil.PutProperty(iUpdateInstaller2.disp, "Updates", updatesDisp)
 	return err
-} 
+}

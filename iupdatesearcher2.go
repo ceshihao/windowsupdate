@@ -129,4 +129,4 @@ func (iUpdateSearcher2 *IUpdateSearcher2) QueryHistory(startIndex, count int32, 
 		return nil, err
 	}
 	return toIUpdateHistoryEntries(historyDisp)
-} 
+}

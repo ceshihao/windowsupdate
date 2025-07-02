@@ -14,6 +14,8 @@ limitations under the License.
 package windowsupdate
 
 import (
+	"time"
+
 	"github.com/go-ole/go-ole"
 	"github.com/go-ole/go-ole/oleutil"
 )
@@ -21,7 +23,7 @@ import (
 // IUpdateService represents an update service.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdateservice
 type IUpdateService struct {
-	disp                *ole.IDispatch
+	disp                 *ole.IDispatch
 	AuthorizationCabPath string
 	CanRegisterWithAU    bool
 	IsDefaultAUService   bool
@@ -78,7 +80,7 @@ func toIUpdateService(updateServiceDisp *ole.IDispatch) (*IUpdateService, error)
 		return nil, err
 	}
 	if redirectUrlsDisp != nil {
-		if iUpdateService.RedirectUrls, err = toStringCollection(redirectUrlsDisp); err != nil {
+		if iUpdateService.RedirectUrls, err = iStringCollectionToStringArrayErr(redirectUrlsDisp, nil); err != nil {
 			return nil, err
 		}
 	}
@@ -109,4 +111,4 @@ func (iUpdateService *IUpdateService) GetPropertyValue(propertyName string) (int
 func (iUpdateService *IUpdateService) SetPropertyValue(propertyName string, propertyValue interface{}) error {
 	_, err := oleutil.CallMethod(iUpdateService.disp, "SetPropertyValue", propertyName, propertyValue)
 	return err
-} 
+}
