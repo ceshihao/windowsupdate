@@ -1,0 +1,24 @@
+name: Windows Go Test
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, windows-2022, windows-2019]
+        go-version: [1.21.x, 1.22.x, 1.23.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Run tests
+        run: go test -v ./... 
