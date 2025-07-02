@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IWebProxy contains the HTTP proxy settings.
@@ -30,6 +31,36 @@ type IWebProxy struct {
 }
 
 func toIWebProxy(webProxyDisp *ole.IDispatch) (*IWebProxy, error) {
-	// TODO
-	return nil, nil
+	if webProxyDisp == nil {
+		return nil, nil
+	}
+	var err error
+	proxy := &IWebProxy{
+		disp: webProxyDisp,
+	}
+	if proxy.Address, err = toStringErr(oleutil.GetProperty(webProxyDisp, "Address")); err != nil {
+		return nil, err
+	}
+	if proxy.AutoDetect, err = toBoolErr(oleutil.GetProperty(webProxyDisp, "AutoDetect")); err != nil {
+		return nil, err
+	}
+	bypassListDisp, err := toIDispatchErr(oleutil.GetProperty(webProxyDisp, "BypassList"))
+	if err != nil {
+		return nil, err
+	}
+	if bypassListDisp != nil {
+		if proxy.BypassList, err = toStringCollection(bypassListDisp); err != nil {
+			return nil, err
+		}
+	}
+	if proxy.BypassProxyOnLocal, err = toBoolErr(oleutil.GetProperty(webProxyDisp, "BypassProxyOnLocal")); err != nil {
+		return nil, err
+	}
+	if proxy.ReadOnly, err = toBoolErr(oleutil.GetProperty(webProxyDisp, "ReadOnly")); err != nil {
+		return nil, err
+	}
+	if proxy.UserName, err = toStringErr(oleutil.GetProperty(webProxyDisp, "UserName")); err != nil {
+		return nil, err
+	}
+	return proxy, nil
 }

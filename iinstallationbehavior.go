@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IInstallationBehavior represents the installation and uninstallation options of an update.
@@ -28,6 +29,24 @@ type IInstallationBehavior struct {
 }
 
 func toIInstallationBehavior(installationBehaviorDisp *ole.IDispatch) (*IInstallationBehavior, error) {
-	// TODO
-	return nil, nil
+	if installationBehaviorDisp == nil {
+		return nil, nil
+	}
+	var err error
+	behavior := &IInstallationBehavior{
+		disp: installationBehaviorDisp,
+	}
+	if behavior.CanRequestUserInput, err = toBoolErr(oleutil.GetProperty(installationBehaviorDisp, "CanRequestUserInput")); err != nil {
+		return nil, err
+	}
+	if behavior.Impact, err = toInt32Err(oleutil.GetProperty(installationBehaviorDisp, "Impact")); err != nil {
+		return nil, err
+	}
+	if behavior.RebootBehavior, err = toInt32Err(oleutil.GetProperty(installationBehaviorDisp, "RebootBehavior")); err != nil {
+		return nil, err
+	}
+	if behavior.RequiresNetworkConnectivity, err = toBoolErr(oleutil.GetProperty(installationBehaviorDisp, "RequiresNetworkConnectivity")); err != nil {
+		return nil, err
+	}
+	return behavior, nil
 }

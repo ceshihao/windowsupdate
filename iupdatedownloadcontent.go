@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IUpdateDownloadContent represents the download content of an update.
@@ -25,6 +26,26 @@ type IUpdateDownloadContent struct {
 }
 
 func toIUpdateDownloadContents(updateDownloadContentsDisp *ole.IDispatch) ([]*IUpdateDownloadContent, error) {
-	// TODO
-	return nil, nil
+	if updateDownloadContentsDisp == nil {
+		return nil, nil
+	}
+	count, err := toInt32Err(oleutil.GetProperty(updateDownloadContentsDisp, "Count"))
+	if err != nil {
+		return nil, err
+	}
+	contents := make([]*IUpdateDownloadContent, 0, count)
+	for i := 0; i < int(count); i++ {
+		contentDisp, err := toIDispatchErr(oleutil.GetProperty(updateDownloadContentsDisp, "Item", i))
+		if err != nil {
+			return nil, err
+		}
+		content := &IUpdateDownloadContent{
+			disp: contentDisp,
+		}
+		if content.DownloadUrl, err = toStringErr(oleutil.GetProperty(contentDisp, "DownloadUrl")); err != nil {
+			return nil, err
+		}
+		contents = append(contents, content)
+	}
+	return contents, nil
 }

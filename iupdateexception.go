@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IUpdateException represents info about the aspects of search results returned in the ISearchResult object that were incomplete. For more info, see Remarks.
@@ -27,6 +28,32 @@ type IUpdateException struct {
 }
 
 func toIUpdateExceptions(updateExceptionsDisp *ole.IDispatch) ([]*IUpdateException, error) {
-	// TODO
-	return nil, nil
+	if updateExceptionsDisp == nil {
+		return nil, nil
+	}
+	count, err := toInt32Err(oleutil.GetProperty(updateExceptionsDisp, "Count"))
+	if err != nil {
+		return nil, err
+	}
+	exceptions := make([]*IUpdateException, 0, count)
+	for i := 0; i < int(count); i++ {
+		exceptionDisp, err := toIDispatchErr(oleutil.GetProperty(updateExceptionsDisp, "Item", i))
+		if err != nil {
+			return nil, err
+		}
+		exception := &IUpdateException{
+			disp: exceptionDisp,
+		}
+		if exception.Context, err = toInt32Err(oleutil.GetProperty(exceptionDisp, "Context")); err != nil {
+			return nil, err
+		}
+		if exception.HResult, err = toInt64Err(oleutil.GetProperty(exceptionDisp, "HResult")); err != nil {
+			return nil, err
+		}
+		if exception.Message, err = toStringErr(oleutil.GetProperty(exceptionDisp, "Message")); err != nil {
+			return nil, err
+		}
+		exceptions = append(exceptions, exception)
+	}
+	return exceptions, nil
 }
