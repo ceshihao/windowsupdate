@@ -14,9 +14,12 @@ limitations under the License.
 package windowsupdate
 
 import (
+	"fmt"
+
 	"github.com/go-ole/go-ole"
-	"github.com/go-ole/go-ole/oleutil"
 )
+
+type _ = ole.IDispatch // Prevent goimports from removing the import
 
 // ICategory represents the category to which an update belongs.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-icategory
@@ -33,20 +36,39 @@ type ICategory struct {
 	Updates     []*IUpdate
 }
 
+// Package-level injectable function variables for UT mock
+var (
+	toIDispatchErrFunc      = toIDispatchErr
+	toStringErrFunc         = toStringErr
+	toInt32ErrFunc          = toInt32Err
+	toICategoriesFunc       func(*ole.IDispatch) ([]*ICategory, error)
+	toIImageInformationFunc = toIImageInformation
+	toICategoryFunc         = toICategory
+)
+
+func init() {
+	toICategoriesFunc = toICategories
+}
+
 func toICategories(categoriesDisp *ole.IDispatch) ([]*ICategory, error) {
-	count, err := toInt32Err(oleutil.GetProperty(categoriesDisp, "Count"))
+	count, err := toInt32ErrFunc(getProperty(categoriesDisp, "Count"))
 	if err != nil {
 		return nil, err
 	}
 
 	categories := make([]*ICategory, 0, count)
 	for i := 0; i < int(count); i++ {
-		categoryDisp, err := toIDispatchErr(oleutil.GetProperty(categoriesDisp, "Item", i))
+		categoryDisp, err := toIDispatchErrFunc(getProperty(categoriesDisp, "Item", i))
 		if err != nil {
 			return nil, err
 		}
-
-		category, err := toICategory(categoryDisp)
+		if categoryDisp == nil {
+			if err != nil {
+				return nil, err
+			}
+			return nil, fmt.Errorf("categoryDisp is nil at index %d", i)
+		}
+		category, err := toICategoryFunc(categoryDisp)
 		if err != nil {
 			return nil, err
 		}
@@ -62,43 +84,43 @@ func toICategory(categoryDisp *ole.IDispatch) (*ICategory, error) {
 		disp: categoryDisp,
 	}
 
-	if iCategory.CategoryID, err = toStringErr(oleutil.GetProperty(categoryDisp, "CategoryID")); err != nil {
+	if iCategory.CategoryID, err = toStringErrFunc(getProperty(categoryDisp, "CategoryID")); err != nil {
 		return nil, err
 	}
 
-	childrenDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Children"))
+	childrenDisp, err := toIDispatchErrFunc(getProperty(categoryDisp, "Children"))
 	if err != nil {
 		return nil, err
 	}
 	if childrenDisp != nil {
-		if iCategory.Children, err = toICategories(childrenDisp); err != nil {
+		if iCategory.Children, err = toICategoriesFunc(childrenDisp); err != nil {
 			return nil, err
 		}
 	}
 
-	if iCategory.Description, err = toStringErr(oleutil.GetProperty(categoryDisp, "Description")); err != nil {
+	if iCategory.Description, err = toStringErrFunc(getProperty(categoryDisp, "Description")); err != nil {
 		return nil, err
 	}
 
-	imageDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Image"))
+	imageDisp, err := toIDispatchErrFunc(getProperty(categoryDisp, "Image"))
 	if err != nil {
 		return nil, err
 	}
 	if imageDisp != nil {
-		if iCategory.Image, err = toIImageInformation(imageDisp); err != nil {
+		if iCategory.Image, err = toIImageInformationFunc(imageDisp); err != nil {
 			return nil, err
 		}
 	}
 
-	if iCategory.Name, err = toStringErr(oleutil.GetProperty(categoryDisp, "Name")); err != nil {
+	if iCategory.Name, err = toStringErrFunc(getProperty(categoryDisp, "Name")); err != nil {
 		return nil, err
 	}
 
-	if iCategory.Order, err = toInt32Err(oleutil.GetProperty(categoryDisp, "Order")); err != nil {
+	if iCategory.Order, err = toInt32ErrFunc(getProperty(categoryDisp, "Order")); err != nil {
 		return nil, err
 	}
 
-	// parentDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Parent"))
+	// parentDisp, err := toIDispatchErrFunc(getProperty(categoryDisp, "Parent"))
 	// if err != nil {
 	// 	return nil, err
 	// }
@@ -108,11 +130,11 @@ func toICategory(categoryDisp *ole.IDispatch) (*ICategory, error) {
 	// 	}
 	// }
 
-	if iCategory.Type, err = toStringErr(oleutil.GetProperty(categoryDisp, "Type")); err != nil {
+	if iCategory.Type, err = toStringErrFunc(getProperty(categoryDisp, "Type")); err != nil {
 		return nil, err
 	}
 
-	// updatesDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Updates"))
+	// updatesDisp, err := toIDispatchErrFunc(getProperty(categoryDisp, "Updates"))
 	// if err != nil {
 	// 	return nil, err
 	// }
