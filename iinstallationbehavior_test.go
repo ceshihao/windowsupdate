@@ -18,104 +18,127 @@ func toIInstallationBehaviorTest(installationBehaviorDisp *ole.IDispatch) (*IIns
 	if v, err := getProperty(installationBehaviorDisp, "CanRequestUserInput"); err != nil {
 		return nil, err
 	} else {
-		behavior.CanRequestUserInput = v.Value().(bool)
+		behavior.CanRequestUserInput = getMockValue(v).(bool)
 	}
 	if v, err := getProperty(installationBehaviorDisp, "Impact"); err != nil {
 		return nil, err
 	} else {
-		behavior.Impact = v.Value().(int32)
+		behavior.Impact = getMockValue(v).(int32)
 	}
 	if v, err := getProperty(installationBehaviorDisp, "RebootBehavior"); err != nil {
 		return nil, err
 	} else {
-		behavior.RebootBehavior = v.Value().(int32)
+		behavior.RebootBehavior = getMockValue(v).(int32)
 	}
 	if v, err := getProperty(installationBehaviorDisp, "RequiresNetworkConnectivity"); err != nil {
 		return nil, err
 	} else {
-		behavior.RequiresNetworkConnectivity = v.Value().(bool)
+		behavior.RequiresNetworkConnectivity = getMockValue(v).(bool)
 	}
 	return behavior, nil
 }
 
 func TestToIInstallationBehavior_AllSuccess(t *testing.T) {
-	withGetProperty(func(_ *ole.IDispatch, prop string) (*mockVariant, error) {
-		m := map[string]interface{}{
-			"CanRequestUserInput":         true,
-			"Impact":                      int32(1),
-			"RebootBehavior":              int32(2),
-			"RequiresNetworkConnectivity": true,
-		}
-		return &mockVariant{v: m[prop]}, nil
-	}, func() {
-		obj, err := toIInstallationBehaviorTest(&ole.IDispatch{})
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
-		if !obj.CanRequestUserInput || obj.Impact != 1 || obj.RebootBehavior != 2 || !obj.RequiresNetworkConnectivity {
-			t.Errorf("unexpected struct values: %+v", obj)
-		}
-	})
+	m := map[string]interface{}{
+		"CanRequestUserInput":         true,
+		"Impact":                      int32(1),
+		"RebootBehavior":              int32(2),
+		"RequiresNetworkConnectivity": true,
+	}
+	WithOleutilMock(
+		func(_ *ole.IDispatch, prop string, _ ...interface{}) (*ole.VARIANT, error) {
+			t.Logf("prop: %q", prop)
+			for k := range m {
+				t.Logf("m key: %q", k)
+			}
+			v, ok := m[prop]
+			if !ok {
+				panic("mock: unexpected property " + prop)
+			}
+			return fakeVariant(v), nil
+		}, nil,
+		func() {
+			obj, err := toIInstallationBehaviorTest(&ole.IDispatch{})
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if !obj.CanRequestUserInput || obj.Impact != 1 || obj.RebootBehavior != 2 || !obj.RequiresNetworkConnectivity {
+				t.Errorf("unexpected struct values: %+v", obj)
+			}
+		},
+	)
 }
 
 func TestToIInstallationBehavior_ErrorCases(t *testing.T) {
 	// CanRequestUserInput error
-	withGetProperty(func(_ *ole.IDispatch, prop string) (*mockVariant, error) {
-		return nil, errors.New("mock error")
-	}, func() {
-		_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
-		if err == nil {
-			t.Error("expected error for CanRequestUserInput")
-		}
-	})
+	WithOleutilMock(
+		func(_ *ole.IDispatch, prop string, _ ...interface{}) (*ole.VARIANT, error) {
+			return nil, errors.New("mock error")
+		}, nil,
+		func() {
+			_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
+			if err == nil {
+				t.Error("expected error for CanRequestUserInput")
+			}
+		},
+	)
 
 	// Impact error
-	withGetProperty(func(_ *ole.IDispatch, prop string) (*mockVariant, error) {
-		if prop == "CanRequestUserInput" {
-			return &mockVariant{v: true}, nil
-		}
-		return nil, errors.New("impact error")
-	}, func() {
-		_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
-		if err == nil {
-			t.Error("expected error for Impact")
-		}
-	})
+	WithOleutilMock(
+		func(_ *ole.IDispatch, prop string, _ ...interface{}) (*ole.VARIANT, error) {
+			if prop == "CanRequestUserInput" {
+				return fakeVariant(true), nil
+			}
+			return nil, errors.New("impact error")
+		}, nil,
+		func() {
+			_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
+			if err == nil {
+				t.Error("expected error for Impact")
+			}
+		},
+	)
 
 	// RebootBehavior error
-	withGetProperty(func(_ *ole.IDispatch, prop string) (*mockVariant, error) {
-		if prop == "CanRequestUserInput" {
-			return &mockVariant{v: true}, nil
-		}
-		if prop == "Impact" {
-			return &mockVariant{v: int32(1)}, nil
-		}
-		return nil, errors.New("reboot error")
-	}, func() {
-		_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
-		if err == nil {
-			t.Error("expected error for RebootBehavior")
-		}
-	})
+	WithOleutilMock(
+		func(_ *ole.IDispatch, prop string, _ ...interface{}) (*ole.VARIANT, error) {
+			if prop == "CanRequestUserInput" {
+				return fakeVariant(true), nil
+			}
+			if prop == "Impact" {
+				return fakeVariant(int32(1)), nil
+			}
+			return nil, errors.New("reboot error")
+		}, nil,
+		func() {
+			_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
+			if err == nil {
+				t.Error("expected error for RebootBehavior")
+			}
+		},
+	)
 
 	// RequiresNetworkConnectivity error
-	withGetProperty(func(_ *ole.IDispatch, prop string) (*mockVariant, error) {
-		if prop == "CanRequestUserInput" {
-			return &mockVariant{v: true}, nil
-		}
-		if prop == "Impact" {
-			return &mockVariant{v: int32(1)}, nil
-		}
-		if prop == "RebootBehavior" {
-			return &mockVariant{v: int32(2)}, nil
-		}
-		return nil, errors.New("net error")
-	}, func() {
-		_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
-		if err == nil {
-			t.Error("expected error for RequiresNetworkConnectivity")
-		}
-	})
+	WithOleutilMock(
+		func(_ *ole.IDispatch, prop string, _ ...interface{}) (*ole.VARIANT, error) {
+			if prop == "CanRequestUserInput" {
+				return fakeVariant(true), nil
+			}
+			if prop == "Impact" {
+				return fakeVariant(int32(1)), nil
+			}
+			if prop == "RebootBehavior" {
+				return fakeVariant(int32(2)), nil
+			}
+			return nil, errors.New("net error")
+		}, nil,
+		func() {
+			_, err := toIInstallationBehaviorTest(&ole.IDispatch{})
+			if err == nil {
+				t.Error("expected error for RequiresNetworkConnectivity")
+			}
+		},
+	)
 }
 
 func TestToIInstallationBehavior_NilInput(t *testing.T) {

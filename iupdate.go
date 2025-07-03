@@ -20,6 +20,9 @@ import (
 	"github.com/go-ole/go-ole/oleutil"
 )
 
+var getProperty = oleutil.GetProperty
+var callMethod = oleutil.CallMethod
+
 // IUpdate contains the properties and methods that are available to an update.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iupdate
 type IUpdate struct {
@@ -68,14 +71,14 @@ type IUpdate struct {
 }
 
 func toIUpdates(updatesDisp *ole.IDispatch) ([]*IUpdate, error) {
-	count, err := toInt32Err(oleutil.GetProperty(updatesDisp, "Count"))
+	count, err := toInt32Err(getProperty(updatesDisp, "Count"))
 	if err != nil {
 		return nil, err
 	}
 
 	updates := make([]*IUpdate, 0, count)
 	for i := 0; i < int(count); i++ {
-		updateDisp, err := toIDispatchErr(oleutil.GetProperty(updatesDisp, "Item", i))
+		updateDisp, err := toIDispatchErr(getProperty(updatesDisp, "Item", i))
 		if err != nil {
 			return nil, err
 		}
@@ -97,19 +100,19 @@ func toIUpdatesIdentities(updatesDisp *ole.IDispatch) ([]*IUpdateIdentity, error
 		return nil, nil
 	}
 
-	count, err := toInt32Err(oleutil.GetProperty(updatesDisp, "Count"))
+	count, err := toInt32Err(getProperty(updatesDisp, "Count"))
 	if err != nil {
 		return nil, err
 	}
 
 	identities := make([]*IUpdateIdentity, count)
 	for i := 0; i < int(count); i++ {
-		updateDisp, err := toIDispatchErr(oleutil.GetProperty(updatesDisp, "Item", i))
+		updateDisp, err := toIDispatchErr(getProperty(updatesDisp, "Item", i))
 		if err != nil {
 			return nil, err
 		}
 
-		identityDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Identity"))
+		identityDisp, err := toIDispatchErr(getProperty(updateDisp, "Identity"))
 		if err != nil {
 			return nil, err
 		}
@@ -128,11 +131,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		disp: updateDisp,
 	}
 
-	if iUpdate.AutoSelectOnWebSites, err = toBoolErr(oleutil.GetProperty(updateDisp, "AutoSelectOnWebSites")); err != nil {
+	if iUpdate.AutoSelectOnWebSites, err = toBoolErr(getProperty(updateDisp, "AutoSelectOnWebSites")); err != nil {
 		return nil, err
 	}
 
-	bundledUpdatesDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "BundledUpdates"))
+	bundledUpdatesDisp, err := toIDispatchErr(getProperty(updateDisp, "BundledUpdates"))
 	if err != nil {
 		return nil, err
 	}
@@ -142,11 +145,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	if iUpdate.CanRequireSource, err = toBoolErr(oleutil.GetProperty(updateDisp, "CanRequireSource")); err != nil {
+	if iUpdate.CanRequireSource, err = toBoolErr(getProperty(updateDisp, "CanRequireSource")); err != nil {
 		return nil, err
 	}
 
-	categoriesDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Categories"))
+	categoriesDisp, err := toIDispatchErr(getProperty(updateDisp, "Categories"))
 	if err != nil {
 		return nil, err
 	}
@@ -156,27 +159,27 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	if iUpdate.Deadline, err = toTimeErr(oleutil.GetProperty(updateDisp, "Deadline")); err != nil {
+	if iUpdate.Deadline, err = toTimeErr(getProperty(updateDisp, "Deadline")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.DeltaCompressedContentAvailable, err = toBoolErr(oleutil.GetProperty(updateDisp, "DeltaCompressedContentAvailable")); err != nil {
+	if iUpdate.DeltaCompressedContentAvailable, err = toBoolErr(getProperty(updateDisp, "DeltaCompressedContentAvailable")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.DeltaCompressedContentPreferred, err = toBoolErr(oleutil.GetProperty(updateDisp, "DeltaCompressedContentPreferred")); err != nil {
+	if iUpdate.DeltaCompressedContentPreferred, err = toBoolErr(getProperty(updateDisp, "DeltaCompressedContentPreferred")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.DeploymentAction, err = toInt32Err(oleutil.GetProperty(updateDisp, "DeploymentAction")); err != nil {
+	if iUpdate.DeploymentAction, err = toInt32Err(getProperty(updateDisp, "DeploymentAction")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.Description, err = toStringErr(oleutil.GetProperty(updateDisp, "Description")); err != nil {
+	if iUpdate.Description, err = toStringErr(getProperty(updateDisp, "Description")); err != nil {
 		return nil, err
 	}
 
-	downloadContentsDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "DownloadContents"))
+	downloadContentsDisp, err := toIDispatchErr(getProperty(updateDisp, "DownloadContents"))
 	if err != nil {
 		return nil, err
 	}
@@ -186,23 +189,23 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	if iUpdate.DownloadPriority, err = toInt32Err(oleutil.GetProperty(updateDisp, "DownloadPriority")); err != nil {
+	if iUpdate.DownloadPriority, err = toInt32Err(getProperty(updateDisp, "DownloadPriority")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.EulaAccepted, err = toBoolErr(oleutil.GetProperty(updateDisp, "EulaAccepted")); err != nil {
+	if iUpdate.EulaAccepted, err = toBoolErr(getProperty(updateDisp, "EulaAccepted")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.EulaText, err = toStringErr(oleutil.GetProperty(updateDisp, "EulaText")); err != nil {
+	if iUpdate.EulaText, err = toStringErr(getProperty(updateDisp, "EulaText")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.HandlerID, err = toStringErr(oleutil.GetProperty(updateDisp, "HandlerID")); err != nil {
+	if iUpdate.HandlerID, err = toStringErr(getProperty(updateDisp, "HandlerID")); err != nil {
 		return nil, err
 	}
 
-	identityDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Identity"))
+	identityDisp, err := toIDispatchErr(getProperty(updateDisp, "Identity"))
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +215,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	imageDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Image"))
+	imageDisp, err := toIDispatchErr(getProperty(updateDisp, "Image"))
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +225,7 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	installationBehaviorDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "InstallationBehavior"))
+	installationBehaviorDisp, err := toIDispatchErr(getProperty(updateDisp, "InstallationBehavior"))
 	if err != nil {
 		return nil, err
 	}
@@ -232,91 +235,91 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	if iUpdate.IsBeta, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsBeta")); err != nil {
+	if iUpdate.IsBeta, err = toBoolErr(getProperty(updateDisp, "IsBeta")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.IsDownloaded, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsDownloaded")); err != nil {
+	if iUpdate.IsDownloaded, err = toBoolErr(getProperty(updateDisp, "IsDownloaded")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.IsHidden, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsHidden")); err != nil {
+	if iUpdate.IsHidden, err = toBoolErr(getProperty(updateDisp, "IsHidden")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.IsInstalled, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsInstalled")); err != nil {
+	if iUpdate.IsInstalled, err = toBoolErr(getProperty(updateDisp, "IsInstalled")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.IsMandatory, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsMandatory")); err != nil {
+	if iUpdate.IsMandatory, err = toBoolErr(getProperty(updateDisp, "IsMandatory")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.IsUninstallable, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsUninstallable")); err != nil {
+	if iUpdate.IsUninstallable, err = toBoolErr(getProperty(updateDisp, "IsUninstallable")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.KBArticleIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "KBArticleIDs"))); err != nil {
+	if iUpdate.KBArticleIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(getProperty(updateDisp, "KBArticleIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.Languages, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "Languages"))); err != nil {
+	if iUpdate.Languages, err = iStringCollectionToStringArrayErr(toIDispatchErr(getProperty(updateDisp, "Languages"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.LastDeploymentChangeTime, err = toTimeErr(oleutil.GetProperty(updateDisp, "LastDeploymentChangeTime")); err != nil {
+	if iUpdate.LastDeploymentChangeTime, err = toTimeErr(getProperty(updateDisp, "LastDeploymentChangeTime")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.MaxDownloadSize, err = toInt64Err(oleutil.GetProperty(updateDisp, "MaxDownloadSize")); err != nil {
+	if iUpdate.MaxDownloadSize, err = toInt64Err(getProperty(updateDisp, "MaxDownloadSize")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.MinDownloadSize, err = toInt64Err(oleutil.GetProperty(updateDisp, "MinDownloadSize")); err != nil {
+	if iUpdate.MinDownloadSize, err = toInt64Err(getProperty(updateDisp, "MinDownloadSize")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.MoreInfoUrls, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "MoreInfoUrls"))); err != nil {
+	if iUpdate.MoreInfoUrls, err = iStringCollectionToStringArrayErr(toIDispatchErr(getProperty(updateDisp, "MoreInfoUrls"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.MsrcSeverity, err = toStringErr(oleutil.GetProperty(updateDisp, "MsrcSeverity")); err != nil {
+	if iUpdate.MsrcSeverity, err = toStringErr(getProperty(updateDisp, "MsrcSeverity")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.RecommendedCpuSpeed, err = toInt32Err(oleutil.GetProperty(updateDisp, "RecommendedCpuSpeed")); err != nil {
+	if iUpdate.RecommendedCpuSpeed, err = toInt32Err(getProperty(updateDisp, "RecommendedCpuSpeed")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.RecommendedHardDiskSpace, err = toInt32Err(oleutil.GetProperty(updateDisp, "RecommendedHardDiskSpace")); err != nil {
+	if iUpdate.RecommendedHardDiskSpace, err = toInt32Err(getProperty(updateDisp, "RecommendedHardDiskSpace")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.RecommendedMemory, err = toInt32Err(oleutil.GetProperty(updateDisp, "RecommendedMemory")); err != nil {
+	if iUpdate.RecommendedMemory, err = toInt32Err(getProperty(updateDisp, "RecommendedMemory")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.ReleaseNotes, err = toStringErr(oleutil.GetProperty(updateDisp, "ReleaseNotes")); err != nil {
+	if iUpdate.ReleaseNotes, err = toStringErr(getProperty(updateDisp, "ReleaseNotes")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.SecurityBulletinIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "SecurityBulletinIDs"))); err != nil {
+	if iUpdate.SecurityBulletinIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(getProperty(updateDisp, "SecurityBulletinIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.SupersededUpdateIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "SupersededUpdateIDs"))); err != nil {
+	if iUpdate.SupersededUpdateIDs, err = iStringCollectionToStringArrayErr(toIDispatchErr(getProperty(updateDisp, "SupersededUpdateIDs"))); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.SupportUrl, err = toStringErr(oleutil.GetProperty(updateDisp, "SupportUrl")); err != nil {
+	if iUpdate.SupportUrl, err = toStringErr(getProperty(updateDisp, "SupportUrl")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.Title, err = toStringErr(oleutil.GetProperty(updateDisp, "Title")); err != nil {
+	if iUpdate.Title, err = toStringErr(getProperty(updateDisp, "Title")); err != nil {
 		return nil, err
 	}
 
-	uninstallationBehaviorDisp, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "UninstallationBehavior"))
+	uninstallationBehaviorDisp, err := toIDispatchErr(getProperty(updateDisp, "UninstallationBehavior"))
 	if err != nil {
 		return nil, err
 	}
@@ -326,11 +329,11 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		}
 	}
 
-	if iUpdate.UninstallationNotes, err = toStringErr(oleutil.GetProperty(updateDisp, "UninstallationNotes")); err != nil {
+	if iUpdate.UninstallationNotes, err = toStringErr(getProperty(updateDisp, "UninstallationNotes")); err != nil {
 		return nil, err
 	}
 
-	if iUpdate.UninstallationSteps, err = iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "UninstallationSteps"))); err != nil {
+	if iUpdate.UninstallationSteps, err = iStringCollectionToStringArrayErr(toIDispatchErr(getProperty(updateDisp, "UninstallationSteps"))); err != nil {
 		return nil, err
 	}
 
@@ -347,7 +350,7 @@ func toIUpdateCollection(updates []*IUpdate) (*ole.IDispatch, error) {
 		return nil, err
 	}
 	for _, update := range updates {
-		_, err := oleutil.CallMethod(coll, "Add", update.disp)
+		_, err := callMethod(coll, "Add", update.disp)
 		if err != nil {
 			return nil, err
 		}
@@ -358,6 +361,6 @@ func toIUpdateCollection(updates []*IUpdate) (*ole.IDispatch, error) {
 // AcceptEula accepts the Microsoft Software License Terms that are associated with Windows Update. Administrators and power users can call this method.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdate-accepteula
 func (iUpdate *IUpdate) AcceptEula() error {
-	_, err := oleutil.CallMethod(iUpdate.disp, "AcceptEula")
+	_, err := callMethod(iUpdate.disp, "AcceptEula")
 	return err
 }
