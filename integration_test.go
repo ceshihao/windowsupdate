@@ -1,5 +1,5 @@
-//go:build windows
-// +build windows
+//go:build windows && integration
+// +build windows,integration
 
 /*
 Copyright 2022 Zheng Dayu
@@ -22,11 +22,12 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
-func init() {
-	ole.CoInitialize(0)
-}
+func init() {}
 
 func TestNewUpdateSession(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -40,6 +41,9 @@ func TestNewUpdateSession(t *testing.T) {
 }
 
 func TestIUpdateSession_CreateUpdateSearcher(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -55,6 +59,9 @@ func TestIUpdateSession_CreateUpdateSearcher(t *testing.T) {
 }
 
 func TestIUpdateSession_CreateUpdateDownloader(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -70,6 +77,9 @@ func TestIUpdateSession_CreateUpdateDownloader(t *testing.T) {
 }
 
 func TestIUpdateSession_CreateUpdateInstaller(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -85,6 +95,9 @@ func TestIUpdateSession_CreateUpdateInstaller(t *testing.T) {
 }
 
 func TestIUpdateSearcher_GetTotalHistoryCount(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -106,6 +119,9 @@ func TestIUpdateSearcher_GetTotalHistoryCount(t *testing.T) {
 }
 
 func TestIUpdateSearcher_QueryHistory(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -150,6 +166,9 @@ func TestIUpdateSearcher_QueryHistory(t *testing.T) {
 }
 
 func TestIUpdateSearcher_Search(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -177,6 +196,9 @@ func TestIUpdateSearcher_Search(t *testing.T) {
 }
 
 func TestIUpdateSearcher_ServerSelection(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -206,6 +228,9 @@ func TestIUpdateSearcher_ServerSelection(t *testing.T) {
 }
 
 func TestIUpdateSearcher_IncludePotentiallySupersededUpdates(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -232,6 +257,9 @@ func TestIUpdateSearcher_IncludePotentiallySupersededUpdates(t *testing.T) {
 }
 
 func TestIUpdateDownloader_Properties(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -268,6 +296,9 @@ func TestIUpdateDownloader_Properties(t *testing.T) {
 }
 
 func TestIUpdateInstaller_Properties(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	session, err := NewUpdateSession()
 	if err != nil {
 		t.Fatalf("NewUpdateSession failed: %v", err)
@@ -301,6 +332,9 @@ func TestIUpdateInstaller_Properties(t *testing.T) {
 }
 
 func TestNewAutomaticUpdates(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	au, err := NewAutomaticUpdates()
 	if err != nil {
 		t.Fatalf("NewAutomaticUpdates failed: %v", err)
@@ -311,6 +345,9 @@ func TestNewAutomaticUpdates(t *testing.T) {
 }
 
 func TestNewSystemInformation(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	sysInfo, err := NewSystemInformation()
 	if err != nil {
 		t.Fatalf("NewSystemInformation failed: %v", err)
@@ -325,6 +362,9 @@ func TestNewSystemInformation(t *testing.T) {
 }
 
 func TestNewWindowsUpdateAgentInfo(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	agentInfo, err := NewWindowsUpdateAgentInfo()
 	if err != nil {
 		t.Fatalf("NewWindowsUpdateAgentInfo failed: %v", err)
@@ -335,6 +375,9 @@ func TestNewWindowsUpdateAgentInfo(t *testing.T) {
 }
 
 func TestIWindowsUpdateAgentInfo_GetApiMajorVersion(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	agentInfo, err := NewWindowsUpdateAgentInfo()
 	if err != nil {
 		t.Fatalf("NewWindowsUpdateAgentInfo failed: %v", err)
@@ -351,6 +394,9 @@ func TestIWindowsUpdateAgentInfo_GetApiMajorVersion(t *testing.T) {
 }
 
 func TestIWindowsUpdateAgentInfo_GetApiMinorVersion(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	agentInfo, err := NewWindowsUpdateAgentInfo()
 	if err != nil {
 		t.Fatalf("NewWindowsUpdateAgentInfo failed: %v", err)
@@ -367,6 +413,9 @@ func TestIWindowsUpdateAgentInfo_GetApiMinorVersion(t *testing.T) {
 }
 
 func TestIWindowsUpdateAgentInfo_GetProductVersionString(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	agentInfo, err := NewWindowsUpdateAgentInfo()
 	if err != nil {
 		t.Fatalf("NewWindowsUpdateAgentInfo failed: %v", err)
@@ -382,6 +431,9 @@ func TestIWindowsUpdateAgentInfo_GetProductVersionString(t *testing.T) {
 }
 
 func TestNewUpdateServiceManager(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	mgr, err := NewUpdateServiceManager()
 	if err != nil {
 		t.Fatalf("NewUpdateServiceManager failed: %v", err)
@@ -392,6 +444,9 @@ func TestNewUpdateServiceManager(t *testing.T) {
 }
 
 func TestIUpdateServiceManager_Services(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	mgr, err := NewUpdateServiceManager()
 	if err != nil {
 		t.Fatalf("NewUpdateServiceManager failed: %v", err)
@@ -413,6 +468,9 @@ func TestIUpdateServiceManager_Services(t *testing.T) {
 }
 
 func TestNewUpdateCollection(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	collection, err := NewUpdateCollection()
 	if err != nil {
 		t.Fatalf("NewUpdateCollection failed: %v", err)
@@ -428,6 +486,9 @@ func TestNewUpdateCollection(t *testing.T) {
 }
 
 func TestNewStringCollection(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	collection, err := NewStringCollection()
 	if err != nil {
 		t.Fatalf("NewStringCollection failed: %v", err)
@@ -443,6 +504,9 @@ func TestNewStringCollection(t *testing.T) {
 }
 
 func TestIStringCollection_Operations(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
 	collection, err := NewStringCollection()
 	if err != nil {
 		t.Fatalf("NewStringCollection failed: %v", err)

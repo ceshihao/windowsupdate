@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests with coverage
         shell: bash
-        run: go test -v -race -coverprofile coverage.out -covermode atomic ./...
+        run: go test -v -race -tags integration -coverprofile coverage.out -covermode atomic ./...
 
       - name: Display coverage
         shell: bash
@@ -64,7 +64,11 @@ jobs:
           $files = gofmt -l .
           if ($files) {
             Write-Host "The following files are not formatted:"
-            Write-Host $files
+            foreach ($file in $files) {
+              Write-Host "  $file"
+            }
+            # Instead of failing, we suggest formatting locally.
+            # Or you can choose to auto-format if desired, but usually, it's a check.
             exit 1
           }
         shell: pwsh
@@ -90,5 +94,5 @@ jobs:
       - name: Build examples
         shell: bash
         run: |
-          go build ./examples/query_update_history
-          go build ./examples/install_updates
+          cd examples/query_update_history && go build .
+          cd ../install_updates && go build .
