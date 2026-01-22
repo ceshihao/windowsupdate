@@ -62,7 +62,7 @@ func (info *IWindowsUpdateAgentInfo) GetInfo(varInfoIdentifier int32) (interface
 
 // GetApiMajorVersion returns the major version of the WUA API.
 func (info *IWindowsUpdateAgentInfo) GetApiMajorVersion() (int32, error) {
-	result, err := oleutil.CallMethod(info.disp, "GetInfo", WindowsUpdateAgentInfoIndexApiMajorVersion)
+	result, err := oleutil.GetProperty(info.disp, "ApiMajorVersion")
 	if err != nil {
 		return 0, err
 	}
@@ -71,7 +71,7 @@ func (info *IWindowsUpdateAgentInfo) GetApiMajorVersion() (int32, error) {
 
 // GetApiMinorVersion returns the minor version of the WUA API.
 func (info *IWindowsUpdateAgentInfo) GetApiMinorVersion() (int32, error) {
-	result, err := oleutil.CallMethod(info.disp, "GetInfo", WindowsUpdateAgentInfoIndexApiMinorVersion)
+	result, err := oleutil.GetProperty(info.disp, "ApiMinorVersion")
 	if err != nil {
 		return 0, err
 	}
@@ -80,7 +80,7 @@ func (info *IWindowsUpdateAgentInfo) GetApiMinorVersion() (int32, error) {
 
 // GetProductVersionString returns the product version string of WUA.
 func (info *IWindowsUpdateAgentInfo) GetProductVersionString() (string, error) {
-	result, err := oleutil.CallMethod(info.disp, "GetInfo", WindowsUpdateAgentInfoIndexProductVersionString)
+	result, err := oleutil.GetProperty(info.disp, "ProductVersionString")
 	if err != nil {
 		return "", err
 	}

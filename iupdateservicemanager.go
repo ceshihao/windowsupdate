@@ -47,17 +47,11 @@ func toIUpdateServiceManager(disp *ole.IDispatch) (*IUpdateServiceManager, error
 		return nil, nil
 	}
 
-	var err error
 	sm := &IUpdateServiceManager{disp: disp}
 
 	servicesDisp, err := toIDispatchErr(oleutil.GetProperty(disp, "Services"))
-	if err != nil {
-		return nil, err
-	}
-	if servicesDisp != nil {
-		if sm.Services, err = toIUpdateServices(servicesDisp); err != nil {
-			return nil, err
-		}
+	if err == nil && servicesDisp != nil {
+		sm.Services, _ = toIUpdateServices(servicesDisp)
 	}
 
 	// IUpdateServiceManager2 property
