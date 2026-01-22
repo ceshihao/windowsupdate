@@ -39,50 +39,63 @@ func NewWindowsUpdateAgentInfo() (*IWindowsUpdateAgentInfo, error) {
 	return &IWindowsUpdateAgentInfo{disp: disp}, nil
 }
 
-// WindowsUpdateAgentInfoIndex defines the information to retrieve about WUA.
-const (
-	WindowsUpdateAgentInfoIndexApiMajorVersion      int32 = 0
-	WindowsUpdateAgentInfoIndexApiMinorVersion      int32 = 1
-	WindowsUpdateAgentInfoIndexProductVersionString int32 = 2
-)
-
 // GetInfo retrieves version information about Windows Update Agent.
+// varInfoIdentifier can be one of: "ApiMajorVersion", "ApiMinorVersion", "ProductVersionString"
 // https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iwindowsupdateagentinfo-getinfo
-func (info *IWindowsUpdateAgentInfo) GetInfo(varInfoIdentifier int32) (interface{}, error) {
-	result, err := oleutil.CallMethod(info.disp, "QueryInterface", varInfoIdentifier)
+func (info *IWindowsUpdateAgentInfo) GetInfo(varInfoIdentifier string) (interface{}, error) {
+	result, err := oleutil.CallMethod(info.disp, "GetInfo", varInfoIdentifier)
 	if err != nil {
-		// Try GetInfo instead
-		result, err = oleutil.CallMethod(info.disp, "QueryInterface", varInfoIdentifier)
-		if err != nil {
-			return nil, err
-		}
+		return nil, err
 	}
 	return result.Value(), nil
 }
 
 // GetApiMajorVersion returns the major version of the WUA API.
 func (info *IWindowsUpdateAgentInfo) GetApiMajorVersion() (int32, error) {
-	result, err := oleutil.GetProperty(info.disp, "ApiMajorVersion")
+	result, err := info.GetInfo("ApiMajorVersion")
 	if err != nil {
 		return 0, err
 	}
-	return variantToInt32(result), nil
+	// Convert result to int32
+	switch v := result.(type) {
+	case int32:
+		return v, nil
+	case int:
+		return int32(v), nil
+	case int64:
+		return int32(v), nil
+	default:
+		return 0, nil
+	}
 }
 
 // GetApiMinorVersion returns the minor version of the WUA API.
 func (info *IWindowsUpdateAgentInfo) GetApiMinorVersion() (int32, error) {
-	result, err := oleutil.GetProperty(info.disp, "ApiMinorVersion")
+	result, err := info.GetInfo("ApiMinorVersion")
 	if err != nil {
 		return 0, err
 	}
-	return variantToInt32(result), nil
+	// Convert result to int32
+	switch v := result.(type) {
+	case int32:
+		return v, nil
+	case int:
+		return int32(v), nil
+	case int64:
+		return int32(v), nil
+	default:
+		return 0, nil
+	}
 }
 
 // GetProductVersionString returns the product version string of WUA.
 func (info *IWindowsUpdateAgentInfo) GetProductVersionString() (string, error) {
-	result, err := oleutil.GetProperty(info.disp, "ProductVersionString")
+	result, err := info.GetInfo("ProductVersionString")
 	if err != nil {
 		return "", err
 	}
-	return variantToString(result), nil
+	if str, ok := result.(string); ok {
+		return str, nil
+	}
+	return "", nil
 }

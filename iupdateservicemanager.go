@@ -51,7 +51,16 @@ func toIUpdateServiceManager(disp *ole.IDispatch) (*IUpdateServiceManager, error
 
 	servicesDisp, err := toIDispatchErr(oleutil.GetProperty(disp, "Services"))
 	if err == nil && servicesDisp != nil {
-		sm.Services, _ = toIUpdateServices(servicesDisp)
+		services, err := toIUpdateServices(servicesDisp)
+		if err == nil {
+			sm.Services = services
+		} else {
+			// If we can't parse services, initialize to empty slice instead of nil
+			sm.Services = make([]*IUpdateService, 0)
+		}
+	} else {
+		// If Services property doesn't exist or fails, initialize to empty slice
+		sm.Services = make([]*IUpdateService, 0)
 	}
 
 	// IUpdateServiceManager2 property
