@@ -22,12 +22,15 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Download dependencies
+        shell: bash
         run: go mod download
 
       - name: Run tests with coverage
-        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        shell: bash
+        run: go test -v -race -coverprofile coverage.out -covermode atomic ./...
 
       - name: Display coverage
+        shell: bash
         run: go tool cover -func=coverage.out
 
       - name: Upload coverage to Codecov
@@ -53,6 +56,7 @@ jobs:
           go-version: '1.23'
 
       - name: Run go vet
+        shell: bash
         run: go vet ./...
 
       - name: Check formatting
@@ -80,9 +84,11 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Build
+        shell: bash
         run: go build ./...
 
       - name: Build examples
+        shell: bash
         run: |
           go build ./examples/query_update_history
           go build ./examples/install_updates
