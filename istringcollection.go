@@ -26,6 +26,21 @@ type IStringCollection struct {
 	ReadOnly bool
 }
 
+// NewStringCollection creates a new empty IStringCollection.
+func NewStringCollection() (*IStringCollection, error) {
+	unknown, err := oleutil.CreateObject("Microsoft.Update.StringColl")
+	if err != nil {
+		return nil, err
+	}
+
+	disp, err := unknown.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return nil, err
+	}
+
+	return toIStringCollection(disp)
+}
+
 func toIStringCollection(disp *ole.IDispatch) (*IStringCollection, error) {
 	if disp == nil {
 		return nil, nil
