@@ -97,3 +97,79 @@ func (iUpdateSearcher *IUpdateSearcher) QueryHistoryAll() ([]*IUpdateHistoryEntr
 	}
 	return iUpdateSearcher.QueryHistory(0, count)
 }
+
+// BeginSearch begins an asynchronous search for updates.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-beginsearch
+func (iUpdateSearcher *IUpdateSearcher) BeginSearch(criteria string) (*ISearchJob, error) {
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "BeginSearch", criteria, nil, nil))
+	if err != nil {
+		return nil, err
+	}
+	return toISearchJob(jobDisp)
+}
+
+// EndSearch completes an asynchronous search.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-endsearch
+func (iUpdateSearcher *IUpdateSearcher) EndSearch(searchJob *ISearchJob) (*ISearchResult, error) {
+	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "EndSearch", searchJob.disp))
+	if err != nil {
+		return nil, err
+	}
+	return toISearchResult(resultDisp)
+}
+
+// EscapeString converts a string into a string that can be used as a literal value in a search criteria string.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-escapestring
+func (iUpdateSearcher *IUpdateSearcher) EscapeString(unescaped string) (string, error) {
+	return toStringErr(oleutil.CallMethod(iUpdateSearcher.disp, "EscapeString", unescaped))
+}
+
+// PutClientApplicationID sets the identifier of the current client application.
+func (iUpdateSearcher *IUpdateSearcher) PutClientApplicationID(value string) error {
+	_, err := oleutil.PutProperty(iUpdateSearcher.disp, "ClientApplicationID", value)
+	if err != nil {
+		return err
+	}
+	iUpdateSearcher.ClientApplicationID = value
+	return nil
+}
+
+// PutServerSelection sets the server to search.
+func (iUpdateSearcher *IUpdateSearcher) PutServerSelection(value int32) error {
+	_, err := oleutil.PutProperty(iUpdateSearcher.disp, "ServerSelection", value)
+	if err != nil {
+		return err
+	}
+	iUpdateSearcher.ServerSelection = value
+	return nil
+}
+
+// PutServiceID sets the ServiceID to search.
+func (iUpdateSearcher *IUpdateSearcher) PutServiceID(value string) error {
+	_, err := oleutil.PutProperty(iUpdateSearcher.disp, "ServiceID", value)
+	if err != nil {
+		return err
+	}
+	iUpdateSearcher.ServiceID = value
+	return nil
+}
+
+// PutOnline sets whether to search online.
+func (iUpdateSearcher *IUpdateSearcher) PutOnline(value bool) error {
+	_, err := oleutil.PutProperty(iUpdateSearcher.disp, "Online", value)
+	if err != nil {
+		return err
+	}
+	iUpdateSearcher.Online = value
+	return nil
+}
+
+// PutIncludePotentiallySupersededUpdates sets whether to include potentially superseded updates.
+func (iUpdateSearcher *IUpdateSearcher) PutIncludePotentiallySupersededUpdates(value bool) error {
+	_, err := oleutil.PutProperty(iUpdateSearcher.disp, "IncludePotentiallySupersededUpdates", value)
+	if err != nil {
+		return err
+	}
+	iUpdateSearcher.IncludePotentiallySupersededUpdates = value
+	return nil
+}

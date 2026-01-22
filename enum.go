@@ -73,3 +73,82 @@ const (
 	UpdateExceptionContextUecWindowsInstaller
 	UpdateExceptionContextUecSearchIncomplete
 )
+
+// ServerSelection defines the update server that is used for a search or download operation.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-serverselection
+const (
+	ServerSelectionSsDefault       int32 = iota // Use the default server.
+	ServerSelectionSsManagedServer              // Use the managed server (WSUS).
+	ServerSelectionSsWindowsUpdate              // Use Windows Update.
+	ServerSelectionSsOthers                     // Use a non-Microsoft server.
+)
+
+// AutomaticUpdatesNotificationLevel defines the notification level for automatic updates.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-automaticupdatesnotificationlevel
+const (
+	AutomaticUpdatesNotificationLevelAunlNotConfigured            int32 = iota // Not configured.
+	AutomaticUpdatesNotificationLevelAunlDisabled                              // Disabled.
+	AutomaticUpdatesNotificationLevelAunlNotifyBeforeDownload                  // Notify before download.
+	AutomaticUpdatesNotificationLevelAunlNotifyBeforeInstallation              // Notify before installation.
+	AutomaticUpdatesNotificationLevelAunlScheduledInstallation                 // Scheduled installation.
+)
+
+// AutomaticUpdatesScheduledInstallationDay defines the days of the week for scheduled automatic updates.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-automaticupdatesscheduledinstallationday
+const (
+	AutomaticUpdatesScheduledInstallationDayAuisdEveryDay       int32 = iota // Every day.
+	AutomaticUpdatesScheduledInstallationDayAuisdEverySunday                 // Every Sunday.
+	AutomaticUpdatesScheduledInstallationDayAuisdEveryMonday                 // Every Monday.
+	AutomaticUpdatesScheduledInstallationDayAuisdEveryTuesday                // Every Tuesday.
+	AutomaticUpdatesScheduledInstallationDayAuisdEveryWednesday              // Every Wednesday.
+	AutomaticUpdatesScheduledInstallationDayAuisdEveryThursday               // Every Thursday.
+	AutomaticUpdatesScheduledInstallationDayAuisdEveryFriday                 // Every Friday.
+	AutomaticUpdatesScheduledInstallationDayAuisdEverySaturday               // Every Saturday.
+)
+
+// DownloadPhase defines the phase of the download.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-downloadphase
+const (
+	DownloadPhaseInitializing int32 = iota + 1
+	DownloadPhaseDownloading
+	DownloadPhaseVerifying
+)
+
+// AutoDownload defines auto download behavior for IUpdate5.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-autodownloadmode
+const (
+	AutoDownloadModeForbidAutoDownload int32 = iota
+	AutoDownloadModeAllowAutoDownload
+)
+
+// AutoSelection defines auto selection behavior for IUpdate5.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-autoselectionmode
+const (
+	AutoSelectionModeLetWindowsUpdateDecide int32 = iota
+	AutoSelectionModeAutoSelectIfDownloaded
+	AutoSelectionModeNeverAutoSelect
+	AutoSelectionModeAlwaysAutoSelect
+)
+
+// UpdateServiceRegistrationState defines the state of a service registration.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updateserviceregistrationstate
+const (
+	UpdateServiceRegistrationStateNotRegistered int32 = iota + 1
+	UpdateServiceRegistrationStateRegistrationPending
+	UpdateServiceRegistrationStateRegistered
+)
+
+// AddServiceFlag defines flags for AddService2.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-addserviceflag
+const (
+	AddServiceFlagAsfAllowPendingRegistration int32 = 1
+	AddServiceFlagAsfAllowOnlineRegistration  int32 = 2
+	AddServiceFlagAsfRegisterServiceWithAU    int32 = 4
+)
+
+// UpdateType defines the type of an update.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updatetype
+const (
+	UpdateTypeSoftware int32 = iota + 1
+	UpdateTypeDriver
+)

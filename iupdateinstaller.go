@@ -58,7 +58,7 @@ func toIUpdateInstaller(updateInstallerDisp *ole.IDispatch) (*IUpdateInstaller, 
 	if iUpdateInstaller.ForceQuiet, err = toBoolErr(oleutil.GetProperty(updateInstallerDisp, "ForceQuiet")); err != nil {
 		return nil, err
 	}
-	
+
 	if iUpdateInstaller.RebootRequiredBeforeInstallation, err = toBoolErr(oleutil.GetProperty(updateInstallerDisp, "RebootRequiredBeforeInstallation")); err != nil {
 		return nil, err
 	}
@@ -123,5 +123,99 @@ func (iUpdateInstaller *IUpdateInstaller) PutIsForced(value bool) error {
 		return err
 	}
 	iUpdateInstaller.IsForced = value
+	return nil
+}
+
+// Uninstall starts a synchronous uninstallation of the updates.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller-uninstall
+func (iUpdateInstaller *IUpdateInstaller) Uninstall(updates []*IUpdate) (*IInstallationResult, error) {
+	updatesDisp, err := toIUpdateCollection(updates)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = oleutil.PutProperty(iUpdateInstaller.disp, "Updates", updatesDisp); err != nil {
+		return nil, err
+	}
+
+	uninstallationResultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "Uninstall"))
+	if err != nil {
+		return nil, err
+	}
+	return toIInstallationResult(uninstallationResultDisp)
+}
+
+// BeginInstall begins an asynchronous installation of the updates.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller-begininstall
+func (iUpdateInstaller *IUpdateInstaller) BeginInstall(updates []*IUpdate) (*IInstallationJob, error) {
+	updatesDisp, err := toIUpdateCollection(updates)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = oleutil.PutProperty(iUpdateInstaller.disp, "Updates", updatesDisp); err != nil {
+		return nil, err
+	}
+
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "BeginInstall", nil, nil, nil))
+	if err != nil {
+		return nil, err
+	}
+	return toIInstallationJob(jobDisp)
+}
+
+// EndInstall completes an asynchronous installation.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller-endinstall
+func (iUpdateInstaller *IUpdateInstaller) EndInstall(installationJob *IInstallationJob) (*IInstallationResult, error) {
+	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "EndInstall", installationJob.disp))
+	if err != nil {
+		return nil, err
+	}
+	return toIInstallationResult(resultDisp)
+}
+
+// BeginUninstall begins an asynchronous uninstallation of the updates.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller-beginuninstall
+func (iUpdateInstaller *IUpdateInstaller) BeginUninstall(updates []*IUpdate) (*IInstallationJob, error) {
+	updatesDisp, err := toIUpdateCollection(updates)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = oleutil.PutProperty(iUpdateInstaller.disp, "Updates", updatesDisp); err != nil {
+		return nil, err
+	}
+
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "BeginUninstall", nil, nil, nil))
+	if err != nil {
+		return nil, err
+	}
+	return toIInstallationJob(jobDisp)
+}
+
+// EndUninstall completes an asynchronous uninstallation.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdateinstaller-enduninstall
+func (iUpdateInstaller *IUpdateInstaller) EndUninstall(installationJob *IInstallationJob) (*IInstallationResult, error) {
+	resultDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "EndUninstall", installationJob.disp))
+	if err != nil {
+		return nil, err
+	}
+	return toIInstallationResult(resultDisp)
+}
+
+// PutAllowSourcePrompts sets whether prompts are allowed during installation.
+func (iUpdateInstaller *IUpdateInstaller) PutAllowSourcePrompts(value bool) error {
+	_, err := oleutil.PutProperty(iUpdateInstaller.disp, "AllowSourcePrompts", value)
+	if err != nil {
+		return err
+	}
+	iUpdateInstaller.AllowSourcePrompts = value
+	return nil
+}
+
+// PutClientApplicationID sets the identifier of the current client application.
+func (iUpdateInstaller *IUpdateInstaller) PutClientApplicationID(value string) error {
+	_, err := oleutil.PutProperty(iUpdateInstaller.disp, "ClientApplicationID", value)
+	if err != nil {
+		return err
+	}
+	iUpdateInstaller.ClientApplicationID = value
 	return nil
 }
