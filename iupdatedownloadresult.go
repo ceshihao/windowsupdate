@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IUpdateDownloadResult contains the properties that indicate the status of a download operation for an update.
@@ -26,6 +27,18 @@ type IUpdateDownloadResult struct {
 }
 
 func toIUpdateDownloadResult(iUpdateDownloadResultDisp *ole.IDispatch) (*IUpdateDownloadResult, error) {
-	// TODO
-	return nil, nil
+	var err error
+	iUpdateDownloadResult := &IUpdateDownloadResult{
+		disp: iUpdateDownloadResultDisp,
+	}
+
+	if iUpdateDownloadResult.HResult, err = toInt32Err(oleutil.GetProperty(iUpdateDownloadResultDisp, "HResult")); err != nil {
+		return nil, err
+	}
+
+	if iUpdateDownloadResult.ResultCode, err = toInt32Err(oleutil.GetProperty(iUpdateDownloadResultDisp, "ResultCode")); err != nil {
+		return nil, err
+	}
+
+	return iUpdateDownloadResult, nil
 }

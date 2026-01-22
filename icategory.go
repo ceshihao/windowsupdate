@@ -98,29 +98,29 @@ func toICategory(categoryDisp *ole.IDispatch) (*ICategory, error) {
 		return nil, err
 	}
 
-	// parentDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Parent"))
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if parentDisp != nil {
-	// 	if iCategory.Parent, err = toICategory(parentDisp); err != nil {
-	// 		return nil, err
-	// 	}
-	// }
+	parentDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Parent"))
+	if err != nil {
+		return nil, err
+	}
+	if parentDisp != nil {
+		if iCategory.Parent, err = toICategory(parentDisp); err != nil {
+			return nil, err
+		}
+	}
 
 	if iCategory.Type, err = toStringErr(oleutil.GetProperty(categoryDisp, "Type")); err != nil {
 		return nil, err
 	}
 
-	// updatesDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Updates"))
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if updatesDisp != nil {
-	// 	if iCategory.Updates, err = toIUpdates(updatesDisp); err != nil {
-	// 		return nil, err
-	// 	}
-	// }
+	updatesDisp, err := toIDispatchErr(oleutil.GetProperty(categoryDisp, "Updates"))
+	if err != nil {
+		return nil, err
+	}
+	if updatesDisp != nil {
+		if iCategory.Updates, err = toIUpdates(updatesDisp); err != nil {
+			return nil, err
+		}
+	}
 
 	return iCategory, nil
 }

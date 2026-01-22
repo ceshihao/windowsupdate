@@ -23,3 +23,53 @@ const (
 	OperationResultCodeOrcFailed
 	OperationResultCodeOrcAborted
 )
+
+// DeploymentAction defines the action for which an update is eligible.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-deploymentaction
+const (
+	DeploymentActionDaNone int32 = iota
+	DeploymentActionDaDetection
+	DeploymentActionDaInstallation
+	DeploymentActionDaUninstallation
+	DeploymentActionDaOptionalInstallation
+)
+
+// DownloadPriority defines the priority of a download.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-downloadpriority
+const (
+	DownloadPriorityDpLow    int32 = 1
+	DownloadPriorityDpNormal int32 = 2
+	DownloadPriorityDpHigh   int32 = 3
+)
+
+// InstallationImpact defines the impact of installing an update.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-installationimpact
+const (
+	InstallationImpactIiNormal int32 = iota
+	InstallationImpactIiMinor
+	InstallationImpactIiRequiresExclusiveHandling
+)
+
+// InstallationRebootBehavior defines the restart behavior of an update.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-installationrebootbehavior
+const (
+	InstallationRebootBehaviorIrbNeverReboots int32 = iota
+	InstallationRebootBehaviorIrbAlwaysRequiresReboot
+	InstallationRebootBehaviorIrbCanRequestReboot
+)
+
+// UpdateOperation defines the operation for which an update is being installed or uninstalled.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updateoperation
+const (
+	UpdateOperationUoInstallation   int32 = 1
+	UpdateOperationUoUninstallation int32 = 2
+)
+
+// UpdateExceptionContext defines the context in which an IUpdateException object can be provided.
+// https://docs.microsoft.com/en-us/windows/win32/api/wuapi/ne-wuapi-updateexceptioncontext
+const (
+	UpdateExceptionContextUecGeneral int32 = iota + 1
+	UpdateExceptionContextUecWindowsDriver
+	UpdateExceptionContextUecWindowsInstaller
+	UpdateExceptionContextUecSearchIncomplete
+)

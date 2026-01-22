@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IImageInformation contains information about a localized image that is associated with an update or a category.
@@ -28,6 +29,26 @@ type IImageInformation struct {
 }
 
 func toIImageInformation(imageInformationDisp *ole.IDispatch) (*IImageInformation, error) {
-	// TODO
-	return nil, nil
+	var err error
+	iImageInformation := &IImageInformation{
+		disp: imageInformationDisp,
+	}
+
+	if iImageInformation.AltText, err = toStringErr(oleutil.GetProperty(imageInformationDisp, "AltText")); err != nil {
+		return nil, err
+	}
+
+	if iImageInformation.Height, err = toInt64Err(oleutil.GetProperty(imageInformationDisp, "Height")); err != nil {
+		return nil, err
+	}
+
+	if iImageInformation.Source, err = toStringErr(oleutil.GetProperty(imageInformationDisp, "Source")); err != nil {
+		return nil, err
+	}
+
+	if iImageInformation.Width, err = toInt64Err(oleutil.GetProperty(imageInformationDisp, "Width")); err != nil {
+		return nil, err
+	}
+
+	return iImageInformation, nil
 }
