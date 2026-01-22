@@ -86,12 +86,9 @@ func (iUpdateSearcher *IUpdateSearcher) QueryHistory(startIndex int32, count int
 // GetTotalHistoryCount returns the number of update events on the computer.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-gettotalhistorycount
 func (iUpdateSearcher *IUpdateSearcher) GetTotalHistoryCount() (int32, error) {
-	// Note: Although documented as a method, in COM automation this is accessed as a property
-	result, err := oleutil.GetProperty(iUpdateSearcher.disp, "GetTotalHistoryCount")
-	if err != nil {
-		return 0, err
-	}
-	return variantToInt32(result), nil
+	// According to MSDN, this is a method with an [out, retval] parameter
+	// In COM automation through IDispatch, such methods return the value directly
+	return toInt32Err(oleutil.CallMethod(iUpdateSearcher.disp, "GetTotalHistoryCount"))
 }
 
 // QueryHistoryAll synchronously queries the computer for the history of all update events.
