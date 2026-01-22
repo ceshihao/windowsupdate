@@ -65,6 +65,17 @@ type IUpdate struct {
 	UninstallationBehavior          *IInstallationBehavior
 	UninstallationNotes             string
 	UninstallationSteps             []string
+	// IUpdate2 properties
+	CveIDs         []string // CVE IDs associated with the update
+	IsPresent      bool     // Indicates if the update is present on the computer
+	RebootRequired bool     // Indicates if a reboot is required
+	// IUpdate3 properties
+	BrowseOnly bool // Indicates whether update can be discovered only by browsing
+	// IUpdate4 properties
+	PerUser bool // Indicates whether this is a per-user update
+	// IUpdate5 properties
+	AutoDownload  int32 // AutoDownload setting
+	AutoSelection int32 // AutoSelection setting
 }
 
 func toIUpdates(updatesDisp *ole.IDispatch) ([]*IUpdate, error) {
@@ -334,6 +345,35 @@ func toIUpdate(updateDisp *ole.IDispatch) (*IUpdate, error) {
 		return nil, err
 	}
 
+	// IUpdate2 properties (may fail on older systems)
+	if cveIDs, err := iStringCollectionToStringArrayErr(toIDispatchErr(oleutil.GetProperty(updateDisp, "CveIDs"))); err == nil {
+		iUpdate.CveIDs = cveIDs
+	}
+	if isPresent, err := toBoolErr(oleutil.GetProperty(updateDisp, "IsPresent")); err == nil {
+		iUpdate.IsPresent = isPresent
+	}
+	if rebootRequired, err := toBoolErr(oleutil.GetProperty(updateDisp, "RebootRequired")); err == nil {
+		iUpdate.RebootRequired = rebootRequired
+	}
+
+	// IUpdate3 properties
+	if browseOnly, err := toBoolErr(oleutil.GetProperty(updateDisp, "BrowseOnly")); err == nil {
+		iUpdate.BrowseOnly = browseOnly
+	}
+
+	// IUpdate4 properties
+	if perUser, err := toBoolErr(oleutil.GetProperty(updateDisp, "PerUser")); err == nil {
+		iUpdate.PerUser = perUser
+	}
+
+	// IUpdate5 properties
+	if autoDownload, err := toInt32Err(oleutil.GetProperty(updateDisp, "AutoDownload")); err == nil {
+		iUpdate.AutoDownload = autoDownload
+	}
+	if autoSelection, err := toInt32Err(oleutil.GetProperty(updateDisp, "AutoSelection")); err == nil {
+		iUpdate.AutoSelection = autoSelection
+	}
+
 	return iUpdate, nil
 }
 
@@ -360,4 +400,16 @@ func toIUpdateCollection(updates []*IUpdate) (*ole.IDispatch, error) {
 func (iUpdate *IUpdate) AcceptEula() error {
 	_, err := oleutil.CallMethod(iUpdate.disp, "AcceptEula")
 	return err
+}
+
+// CopyToCache copies the contents of an update to the Windows Update Agent (WUA) cache. (IUpdate2)
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdate2-copytocache
+func (iUpdate *IUpdate) CopyToCache(files *IStringCollection) error {
+	_, err := oleutil.CallMethod(iUpdate.disp, "CopyToCache", files.disp)
+	return err
+}
+
+// GetDispatch returns the underlying IDispatch interface.
+func (iUpdate *IUpdate) GetDispatch() *ole.IDispatch {
+	return iUpdate.disp
 }

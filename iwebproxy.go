@@ -15,12 +15,13 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IWebProxy contains the HTTP proxy settings.
 // https://docs.microsoft.com/en-us/windows/win32/api/wuapi/nn-wuapi-iwebproxy
 type IWebProxy struct {
-	disp               *ole.Dispatch
+	disp               *ole.IDispatch
 	Address            string
 	AutoDetect         bool
 	BypassList         []string
@@ -30,6 +31,40 @@ type IWebProxy struct {
 }
 
 func toIWebProxy(webProxyDisp *ole.IDispatch) (*IWebProxy, error) {
-	// TODO
-	return nil, nil
+	var err error
+	iWebProxy := &IWebProxy{
+		disp: webProxyDisp,
+	}
+
+	if iWebProxy.Address, err = toStringErr(oleutil.GetProperty(webProxyDisp, "Address")); err != nil {
+		return nil, err
+	}
+
+	if iWebProxy.AutoDetect, err = toBoolErr(oleutil.GetProperty(webProxyDisp, "AutoDetect")); err != nil {
+		return nil, err
+	}
+
+	bypassListDisp, err := toIDispatchErr(oleutil.GetProperty(webProxyDisp, "BypassList"))
+	if err != nil {
+		return nil, err
+	}
+	if bypassListDisp != nil {
+		if iWebProxy.BypassList, err = iStringCollectionToStringArrayErr(bypassListDisp, nil); err != nil {
+			return nil, err
+		}
+	}
+
+	if iWebProxy.BypassProxyOnLocal, err = toBoolErr(oleutil.GetProperty(webProxyDisp, "BypassProxyOnLocal")); err != nil {
+		return nil, err
+	}
+
+	if iWebProxy.ReadOnly, err = toBoolErr(oleutil.GetProperty(webProxyDisp, "ReadOnly")); err != nil {
+		return nil, err
+	}
+
+	if iWebProxy.UserName, err = toStringErr(oleutil.GetProperty(webProxyDisp, "UserName")); err != nil {
+		return nil, err
+	}
+
+	return iWebProxy, nil
 }

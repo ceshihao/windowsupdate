@@ -15,6 +15,7 @@ package windowsupdate
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 // IUpdateException represents info about the aspects of search results returned in the ISearchResult object that were incomplete. For more info, see Remarks.
@@ -27,6 +28,45 @@ type IUpdateException struct {
 }
 
 func toIUpdateExceptions(updateExceptionsDisp *ole.IDispatch) ([]*IUpdateException, error) {
-	// TODO
-	return nil, nil
+	count, err := toInt32Err(oleutil.GetProperty(updateExceptionsDisp, "Count"))
+	if err != nil {
+		return nil, err
+	}
+
+	exceptions := make([]*IUpdateException, 0, count)
+	for i := 0; i < int(count); i++ {
+		exceptionDisp, err := toIDispatchErr(oleutil.GetProperty(updateExceptionsDisp, "Item", i))
+		if err != nil {
+			return nil, err
+		}
+
+		exception, err := toIUpdateException(exceptionDisp)
+		if err != nil {
+			return nil, err
+		}
+
+		exceptions = append(exceptions, exception)
+	}
+	return exceptions, nil
+}
+
+func toIUpdateException(updateExceptionDisp *ole.IDispatch) (*IUpdateException, error) {
+	var err error
+	iUpdateException := &IUpdateException{
+		disp: updateExceptionDisp,
+	}
+
+	if iUpdateException.Context, err = toInt32Err(oleutil.GetProperty(updateExceptionDisp, "Context")); err != nil {
+		return nil, err
+	}
+
+	if iUpdateException.HResult, err = toInt64Err(oleutil.GetProperty(updateExceptionDisp, "HResult")); err != nil {
+		return nil, err
+	}
+
+	if iUpdateException.Message, err = toStringErr(oleutil.GetProperty(updateExceptionDisp, "Message")); err != nil {
+		return nil, err
+	}
+
+	return iUpdateException, nil
 }

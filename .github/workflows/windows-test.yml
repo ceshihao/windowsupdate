@@ -1,0 +1,98 @@
+name: Windows Go Test
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        go-version: ['1.23', '1.24', '1.25']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Download dependencies
+        shell: bash
+        run: go mod download
+
+      - name: Run tests with coverage
+        shell: bash
+        run: go test -v -race -tags integration -coverprofile coverage.out -covermode atomic ./...
+
+      - name: Display coverage
+        shell: bash
+        run: go tool cover -func=coverage.out
+
+      - name: Upload coverage to Codecov
+        if: matrix.go-version == '1.23'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.out
+          flags: unittests
+          name: codecov-windowsupdate
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Run go vet
+        shell: bash
+        run: go vet ./...
+
+      - name: Check formatting
+        run: |
+          $files = gofmt -l .
+          if ($files) {
+            Write-Host "The following files are not formatted:"
+            foreach ($file in $files) {
+              Write-Host "  $file"
+            }
+            # Instead of failing, we suggest formatting locally.
+            # Or you can choose to auto-format if desired, but usually, it's a check.
+            exit 1
+          }
+        shell: pwsh
+
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        go-version: ['1.23', '1.24', '1.25']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Build
+        shell: bash
+        run: go build ./...
+
+      - name: Build examples
+        shell: bash
+        run: |
+          cd examples/query_update_history && go build .
+          cd ../install_updates && go build .

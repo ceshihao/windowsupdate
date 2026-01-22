@@ -1,0 +1,10 @@
+# 强制所有 Go 文件使用 LF 换行符
+*.go text eol=lf
+
+# 其他文本文件也使用 LF
+*.txt text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
