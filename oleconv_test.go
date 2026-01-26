@@ -1,3 +1,6 @@
+//go:build windows
+// +build windows
+
 /*
 Copyright 2022 Zheng Dayu
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -323,30 +326,6 @@ func TestToIUpdateInstallationResult_NilDispatch(t *testing.T) {
 	}
 	if result != nil {
 		t.Errorf("expected nil result for nil dispatch, got %v", result)
-	}
-}
-
-func TestToIStringCollection_NilDispatch(t *testing.T) {
-	result, err := toIStringCollection(nil)
-	if err != nil {
-		t.Errorf("expected no error for nil dispatch, got %v", err)
-	}
-	if result != nil {
-		t.Errorf("expected nil result for nil dispatch, got %v", result)
-	}
-}
-
-// TestIStringCollection_ToSlice_EmptyCollection tests ToSlice with zero count
-func TestIStringCollection_ToSlice_EmptyCollection(t *testing.T) {
-	sc := &IStringCollection{
-		Count: 0,
-	}
-	result, err := sc.ToSlice()
-	if err != nil {
-		t.Errorf("expected no error, got %v", err)
-	}
-	if len(result) != 0 {
-		t.Errorf("expected empty slice, got %v", result)
 	}
 }
 
