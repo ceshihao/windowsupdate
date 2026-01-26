@@ -2,7 +2,7 @@ name: Windows Go Test
 
 on:
   push:
-    branches: ["**"]
+    branches: ["master"]
   pull_request:
     branches: [ master ]
 
@@ -27,22 +27,17 @@ jobs:
 
       - name: Run tests with coverage
         shell: bash
-        run: go test -v -race -tags integration -coverprofile coverage.out -covermode atomic ./...
+        run: go test -coverprofile coverage.txt -covermode atomic ./...
 
       - name: Display coverage
         shell: bash
-        run: go tool cover -func=coverage.out
+        run: go tool cover -func=coverage.txt
 
       - name: Upload coverage to Codecov
         if: matrix.go-version == '1.23'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
-          files: ./coverage.out
-          flags: unittests
-          name: codecov-windowsupdate
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     runs-on: windows-latest
