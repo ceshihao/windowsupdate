@@ -101,4 +101,3 @@ func TestIInstallationResult_GetUpdateResult_NilDispatch(t *testing.T) {
 		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", updateResult, err)
 	}
 }
-

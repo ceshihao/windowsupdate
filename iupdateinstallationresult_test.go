@@ -73,4 +73,3 @@ func TestIUpdateInstallationResult_Variants(t *testing.T) {
 // Note: toIUpdateInstallationResult requires actual COM objects from Windows Update.
 // Those paths are exercised in higher-level integration tests where real installations
 // are performed. Creating such COM scenarios is not suitable for unit tests.
-
