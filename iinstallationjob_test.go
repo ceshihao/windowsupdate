@@ -60,3 +60,43 @@ func TestIInstallationJob_Methods(t *testing.T) {
 		t.Error("IsCompleted should be true")
 	}
 }
+
+// TestIInstallationJob_BeginInstallAndMethods exercises toIInstallationJob, CleanUp, RequestAbort, GetProgress via real COM.
+func TestIInstallationJob_BeginInstallAndMethods(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	session, err := NewUpdateSession()
+	if err != nil {
+		t.Fatalf("NewUpdateSession failed: %v", err)
+	}
+
+	installer, err := session.CreateUpdateInstaller()
+	if err != nil {
+		t.Fatalf("CreateUpdateInstaller failed: %v", err)
+	}
+
+	job, err := installer.BeginInstall([]*IUpdate{})
+	if err != nil {
+		t.Skipf("BeginInstall failed (may need WU service): %v", err)
+		return
+	}
+	if job == nil {
+		t.Fatal("BeginInstall returned nil job")
+	}
+
+	// GetProgress covers toIInstallationProgress and IInstallationProgress.GetUpdateResult when progress is used
+	progress, err := job.GetProgress()
+	if err != nil {
+		t.Logf("GetProgress returned error (non-fatal): %v", err)
+	}
+	if progress != nil {
+		_, _ = progress.GetUpdateResult(0)
+	}
+
+	_ = job.RequestAbort()
+	err = job.CleanUp()
+	if err != nil {
+		t.Logf("CleanUp returned error (non-fatal): %v", err)
+	}
+}

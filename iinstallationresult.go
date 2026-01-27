@@ -28,6 +28,10 @@ type IInstallationResult struct {
 }
 
 func toIInstallationResult(installationResultDisp *ole.IDispatch) (*IInstallationResult, error) {
+	if installationResultDisp == nil {
+		return nil, nil
+	}
+
 	var err error
 	iInstallationResult := &IInstallationResult{
 		disp: installationResultDisp,

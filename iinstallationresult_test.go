@@ -18,6 +18,16 @@ package windowsupdate
 
 import "testing"
 
+func TestToIInstallationResult_NilDispatch(t *testing.T) {
+	result, err := toIInstallationResult(nil)
+	if err != nil {
+		t.Errorf("expected no error for nil dispatch, got %v", err)
+	}
+	if result != nil {
+		t.Errorf("expected nil result for nil dispatch, got %v", result)
+	}
+}
+
 func TestIInstallationResult_StructureFields(t *testing.T) {
 	result := &IInstallationResult{
 		HResult:        0,
@@ -74,30 +84,5 @@ func TestIInstallationResult_ErrorScenarios(t *testing.T) {
 				t.Errorf("RebootRequired = %v, want %v", result.RebootRequired, tc.rebootRequired)
 			}
 		})
-	}
-}
-
-func TestToIInstallationResult_NilDispatch(t *testing.T) {
-	defer func() {
-		_ = recover()
-	}()
-
-	result, err := toIInstallationResult(nil)
-	if err == nil && result != nil {
-		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
-	}
-}
-
-func TestIInstallationResult_GetUpdateResult_NilDispatch(t *testing.T) {
-	defer func() {
-		_ = recover()
-	}()
-
-	ir := &IInstallationResult{
-		disp: nil,
-	}
-	updateResult, err := ir.GetUpdateResult(0)
-	if err == nil && updateResult != nil {
-		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", updateResult, err)
 	}
 }

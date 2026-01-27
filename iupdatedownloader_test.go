@@ -138,3 +138,64 @@ func TestIUpdateDownloader_Methods_NilDispatch(t *testing.T) {
 		}
 	}()
 }
+
+// TestIUpdateDownloader_Download_EmptyUpdates exercises toIDownloadResult via Download with no updates.
+func TestIUpdateDownloader_Download_EmptyUpdates(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	session, err := NewUpdateSession()
+	if err != nil {
+		t.Fatalf("NewUpdateSession failed: %v", err)
+	}
+
+	downloader, err := session.CreateUpdateDownloader()
+	if err != nil {
+		t.Fatalf("CreateUpdateDownloader failed: %v", err)
+	}
+
+	result, err := downloader.Download([]*IUpdate{})
+	if err != nil {
+		t.Skipf("Download with empty updates failed (may need WU service): %v", err)
+		return
+	}
+	if result == nil {
+		t.Fatal("Download returned nil result")
+	}
+	// Cover IDownloadResult.GetUpdateResult (may error for index 0 on empty result)
+	_, _ = result.GetUpdateResult(0)
+}
+
+// TestIUpdateDownloader_BeginDownloadEndDownload exercises toIDownloadResult via EndDownload.
+func TestIUpdateDownloader_BeginDownloadEndDownload(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	session, err := NewUpdateSession()
+	if err != nil {
+		t.Fatalf("NewUpdateSession failed: %v", err)
+	}
+
+	downloader, err := session.CreateUpdateDownloader()
+	if err != nil {
+		t.Fatalf("CreateUpdateDownloader failed: %v", err)
+	}
+
+	job, err := downloader.BeginDownload([]*IUpdate{})
+	if err != nil {
+		t.Skipf("BeginDownload failed: %v", err)
+		return
+	}
+	if job == nil {
+		t.Fatal("BeginDownload returned nil job")
+	}
+
+	result, err := downloader.EndDownload(job)
+	if err != nil {
+		t.Skipf("EndDownload failed (job may not be complete): %v", err)
+		return
+	}
+	if result != nil {
+		_, _ = result.GetUpdateResult(0)
+	}
+}

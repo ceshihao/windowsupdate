@@ -18,6 +18,16 @@ package windowsupdate
 
 import "testing"
 
+func TestToIImageInformation_NilDispatch(t *testing.T) {
+	result, err := toIImageInformation(nil)
+	if err != nil {
+		t.Errorf("expected no error for nil dispatch, got %v", err)
+	}
+	if result != nil {
+		t.Errorf("expected nil result for nil dispatch, got %v", result)
+	}
+}
+
 func TestIImageInformation_StructureFields(t *testing.T) {
 	image := &IImageInformation{
 		AltText: "Image alt text",
@@ -36,16 +46,5 @@ func TestIImageInformation_StructureFields(t *testing.T) {
 	}
 	if image.Source != "https://example.com/image.png" {
 		t.Errorf("Source not set correctly, got %s", image.Source)
-	}
-}
-
-func TestToIImageInformation_NilDispatch(t *testing.T) {
-	defer func() {
-		_ = recover()
-	}()
-
-	result, err := toIImageInformation(nil)
-	if err == nil && result != nil {
-		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
 	}
 }

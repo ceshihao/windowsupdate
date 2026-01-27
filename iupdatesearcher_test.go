@@ -427,12 +427,10 @@ func TestIUpdateSearcher_EndSearch(t *testing.T) {
 		return
 	}
 
-	// Wait a bit for the search to complete
-	// In a real scenario, you would poll IsCompleted or use callbacks
-	// For testing, we'll try to end it immediately
+	// EndSearch blocks until the async search completes; call it to cover EndSearch path
 	result, err := searcher.EndSearch(searchJob)
 	if err != nil {
-		t.Logf("EndSearch may fail if search not complete: %v", err)
+		t.Logf("EndSearch failed: %v", err)
 		return
 	}
 	if result == nil {

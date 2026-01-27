@@ -16,7 +16,11 @@ limitations under the License.
 
 package windowsupdate
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/go-ole/go-ole"
+)
 
 func TestToIDownloadJob_NilDispatch(t *testing.T) {
 	result, err := toIDownloadJob(nil)
@@ -63,4 +67,49 @@ func TestIDownloadJob_Methods_NilDispatch(t *testing.T) {
 			t.Errorf("expected error or panic for nil dispatch, got progress=%v, err=%v", progress, err)
 		}
 	}()
+}
+
+// TestIDownloadJob_BeginDownloadAndMethods exercises toIDownloadJob, CleanUp, RequestAbort, GetProgress via real COM.
+func TestIDownloadJob_BeginDownloadAndMethods(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	session, err := NewUpdateSession()
+	if err != nil {
+		t.Fatalf("NewUpdateSession failed: %v", err)
+	}
+
+	downloader, err := session.CreateUpdateDownloader()
+	if err != nil {
+		t.Fatalf("CreateUpdateDownloader failed: %v", err)
+	}
+
+	// BeginDownload with empty updates yields a job that completes immediately or very quickly
+	job, err := downloader.BeginDownload([]*IUpdate{})
+	if err != nil {
+		t.Skipf("BeginDownload failed (may need WU service): %v", err)
+		return
+	}
+	if job == nil {
+		t.Fatal("BeginDownload returned nil job")
+	}
+
+	// GetProgress returns current progress (covers toIDownloadProgress path when used from job)
+	progress, err := job.GetProgress()
+	if err != nil {
+		t.Logf("GetProgress returned error (non-fatal): %v", err)
+	}
+	if progress != nil {
+		// If we got progress, calling GetUpdateResult(0) covers IDownloadProgress.GetUpdateResult
+		_, _ = progress.GetUpdateResult(0)
+	}
+
+	// RequestAbort before CleanUp so disp is still valid
+	_ = job.RequestAbort()
+
+	// CleanUp releases resources; safe to call on completed job
+	err = job.CleanUp()
+	if err != nil {
+		t.Logf("CleanUp returned error (non-fatal): %v", err)
+	}
 }

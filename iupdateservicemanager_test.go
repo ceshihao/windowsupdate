@@ -108,14 +108,18 @@ func TestIUpdateServiceManager_AddService(t *testing.T) {
 }
 
 func TestIUpdateServiceManager_RegisterServiceWithAU(t *testing.T) {
-	// Note: RegisterServiceWithAU can hang for a very long time waiting
-	// for system services. We verify the structure instead.
-	mgr := &IUpdateServiceManager{
-		ClientApplicationID: "test-app",
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	mgr, err := NewUpdateServiceManager()
+	if err != nil {
+		t.Fatalf("NewUpdateServiceManager failed: %v", err)
 	}
 
-	if mgr.ClientApplicationID != "test-app" {
-		t.Errorf("ClientApplicationID = %s, want test-app", mgr.ClientApplicationID)
+	// Call with empty/invalid service ID; expect quick failure rather than hang
+	err = mgr.RegisterServiceWithAU("")
+	if err != nil {
+		t.Logf("RegisterServiceWithAU with empty ID failed as expected: %v", err)
 	}
 }
 
@@ -138,14 +142,18 @@ func TestIUpdateServiceManager_RemoveService(t *testing.T) {
 }
 
 func TestIUpdateServiceManager_UnregisterServiceWithAU(t *testing.T) {
-	// Note: UnregisterServiceWithAU can hang for a very long time (10+ minutes)
-	// waiting for system services. We verify the structure instead.
-	mgr := &IUpdateServiceManager{
-		ClientApplicationID: "test-app",
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	mgr, err := NewUpdateServiceManager()
+	if err != nil {
+		t.Fatalf("NewUpdateServiceManager failed: %v", err)
 	}
 
-	if mgr.ClientApplicationID != "test-app" {
-		t.Errorf("ClientApplicationID = %s, want test-app", mgr.ClientApplicationID)
+	// Call with empty/invalid service ID; expect quick failure rather than hang
+	err = mgr.UnregisterServiceWithAU("")
+	if err != nil {
+		t.Logf("UnregisterServiceWithAU with empty ID failed as expected: %v", err)
 	}
 }
 

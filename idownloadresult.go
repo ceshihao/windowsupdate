@@ -27,6 +27,10 @@ type IDownloadResult struct {
 }
 
 func toIDownloadResult(downloadResultDisp *ole.IDispatch) (*IDownloadResult, error) {
+	if downloadResultDisp == nil {
+		return nil, nil
+	}
+
 	var err error
 	iDownloadResult := &IDownloadResult{
 		disp: downloadResultDisp,

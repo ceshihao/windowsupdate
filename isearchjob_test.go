@@ -16,7 +16,11 @@ limitations under the License.
 
 package windowsupdate
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/go-ole/go-ole"
+)
 
 func TestToISearchJob_NilDispatch(t *testing.T) {
 	result, err := toISearchJob(nil)
@@ -54,4 +58,37 @@ func TestISearchJob_Methods_NilDispatch(t *testing.T) {
 		defer func() { _ = recover() }()
 		_ = job.RequestAbort()
 	}()
+}
+
+// TestISearchJob_CleanUpRequestAbort exercises CleanUp and RequestAbort via a real search job from BeginSearch.
+func TestISearchJob_CleanUpRequestAbort(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	session, err := NewUpdateSession()
+	if err != nil {
+		t.Fatalf("NewUpdateSession failed: %v", err)
+	}
+
+	searcher, err := session.CreateUpdateSearcher()
+	if err != nil {
+		t.Fatalf("CreateUpdateSearcher failed: %v", err)
+	}
+
+	job, err := searcher.BeginSearch("IsInstalled=1")
+	if err != nil {
+		t.Skipf("BeginSearch failed: %v", err)
+		return
+	}
+	if job == nil {
+		t.Fatal("BeginSearch returned nil job")
+	}
+
+	// RequestAbort before CleanUp so disp is still valid
+	_ = job.RequestAbort()
+
+	err = job.CleanUp()
+	if err != nil {
+		t.Logf("CleanUp returned error (non-fatal): %v", err)
+	}
 }

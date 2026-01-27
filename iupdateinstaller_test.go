@@ -229,6 +229,40 @@ func TestIUpdateInstaller_EndInstall(t *testing.T) {
 	}
 }
 
+// TestIUpdateInstaller_BeginInstallEndInstall exercises toIInstallationResult and IInstallationResult.GetUpdateResult via real COM.
+func TestIUpdateInstaller_BeginInstallEndInstall(t *testing.T) {
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+
+	session, err := NewUpdateSession()
+	if err != nil {
+		t.Fatalf("NewUpdateSession failed: %v", err)
+	}
+
+	installer, err := session.CreateUpdateInstaller()
+	if err != nil {
+		t.Fatalf("CreateUpdateInstaller failed: %v", err)
+	}
+
+	job, err := installer.BeginInstall([]*IUpdate{})
+	if err != nil {
+		t.Skipf("BeginInstall failed: %v", err)
+		return
+	}
+	if job == nil {
+		t.Fatal("BeginInstall returned nil job")
+	}
+
+	result, err := installer.EndInstall(job)
+	if err != nil {
+		t.Skipf("EndInstall failed (job may not be complete): %v", err)
+		return
+	}
+	if result != nil {
+		_, _ = result.GetUpdateResult(0)
+	}
+}
+
 func TestIUpdateInstaller_BeginUninstall(t *testing.T) {
 	// Note: BeginUninstall requires a real IUpdateInstaller with updates.
 	// Calling with nil dispatch would cause panic.

@@ -29,6 +29,10 @@ type IImageInformation struct {
 }
 
 func toIImageInformation(imageInformationDisp *ole.IDispatch) (*IImageInformation, error) {
+	if imageInformationDisp == nil {
+		return nil, nil
+	}
+
 	var err error
 	iImageInformation := &IImageInformation{
 		disp: imageInformationDisp,

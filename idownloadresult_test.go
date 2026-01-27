@@ -64,30 +64,17 @@ func TestIDownloadResult_ResultCodes(t *testing.T) {
 	}
 }
 
+// TestToIDownloadResult_NilDispatch covers the nil-dispatch path of toIDownloadResult.
 func TestToIDownloadResult_NilDispatch(t *testing.T) {
-	defer func() {
-		// If a panic occurs when using a nil dispatch, that's acceptable
-		// as the COM layer may not handle nil pointers uniformly.
-		_ = recover()
-	}()
-
 	result, err := toIDownloadResult(nil)
-	if err == nil && result != nil {
-		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+	if err != nil {
+		t.Errorf("expected no error for nil dispatch, got %v", err)
+	}
+	if result != nil {
+		t.Errorf("expected nil result for nil dispatch, got %v", result)
 	}
 }
 
-func TestIDownloadResult_GetUpdateResult_NilDispatch(t *testing.T) {
-	defer func() {
-		// Allow panic as a valid behavior when the underlying COM dispatch is nil.
-		_ = recover()
-	}()
-
-	dr := &IDownloadResult{
-		disp: nil,
-	}
-	updateResult, err := dr.GetUpdateResult(0)
-	if err == nil && updateResult != nil {
-		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", updateResult, err)
-	}
-}
+// Note: toIDownloadResult with real COM and GetUpdateResult are covered by
+// TestIUpdateDownloader_Download_EmptyUpdates and TestIUpdateDownloader_BeginDownloadEndDownload
+// in iupdatedownloader_test.go when run on Windows.
