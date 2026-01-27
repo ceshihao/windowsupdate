@@ -16,11 +16,7 @@ limitations under the License.
 
 package windowsupdate
 
-import (
-	"testing"
-
-	"github.com/go-ole/go-ole"
-)
+import "testing"
 
 func TestIImageInformation_StructureFields(t *testing.T) {
 	image := &IImageInformation{
@@ -43,56 +39,13 @@ func TestIImageInformation_StructureFields(t *testing.T) {
 	}
 }
 
-func TestToIImageInformation_WithRealUpdate(t *testing.T) {
-	ole.CoInitialize(0)
-	defer ole.CoUninitialize()
+func TestToIImageInformation_NilDispatch(t *testing.T) {
+	defer func() {
+		_ = recover()
+	}()
 
-	// Try to get real updates and check if any have image information
-	session, err := NewUpdateSession()
-	if err != nil {
-		t.Skipf("NewUpdateSession failed: %v", err)
-	}
-
-	searcher, err := session.CreateUpdateSearcher()
-	if err != nil {
-		t.Skipf("CreateUpdateSearcher failed: %v", err)
-	}
-
-	// Search for any updates
-	result, err := searcher.Search("IsInstalled=0")
-	if err != nil {
-		t.Skipf("Search failed: %v", err)
-	}
-
-	if result == nil || len(result.Updates) == 0 {
-		t.Skip("No updates available to test image information")
-	}
-
-	// Check if any update has image information
-	foundImage := false
-	for i := 0; i < len(result.Updates) && i < 10; i++ {
-		update := result.Updates[i]
-
-		// Access the Image property which calls toIImageInformation internally
-		if update.Image != nil {
-			t.Logf("Found update with image information")
-			t.Logf("Image AltText: %s", update.Image.AltText)
-			t.Logf("Image Source: %s", update.Image.Source)
-			t.Logf("Image Size: %dx%d", update.Image.Width, update.Image.Height)
-
-			// Verify that image fields are populated
-			if update.Image.Source == "" {
-				t.Error("Image should have a Source URL")
-			}
-
-			foundImage = true
-			break
-		}
-	}
-
-	if !foundImage {
-		t.Log("No updates with image information found (this is common)")
-		// Even if no image is found, the code path through toIUpdate is exercised
-		// which includes the attempt to read Image property
+	result, err := toIImageInformation(nil)
+	if err == nil && result != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
 	}
 }

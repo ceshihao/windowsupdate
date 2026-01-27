@@ -103,49 +103,38 @@ func TestIUpdateDownloader_PutClientApplicationID(t *testing.T) {
 	}
 }
 
-func TestIUpdateDownloader_Download(t *testing.T) {
-	// Note: Download requires a real IUpdateDownloader with updates.
-	// Calling with nil dispatch would cause panic.
-	// This method is covered through integration tests.
-
+func TestIUpdateDownloader_Methods_NilDispatch(t *testing.T) {
 	downloader := &IUpdateDownloader{
 		disp:     nil,
 		IsForced: false,
-	}
-
-	// Verify structure can be created
-	if downloader.IsForced {
-		t.Error("IsForced should be false")
-	}
-}
-
-func TestIUpdateDownloader_BeginDownload(t *testing.T) {
-	// Note: BeginDownload requires a real IUpdateDownloader with updates.
-	// Calling with nil dispatch would cause panic.
-	// This method is covered through integration tests.
-
-	downloader := &IUpdateDownloader{
-		disp:     nil,
 		Priority: DownloadPriorityDpNormal,
 	}
 
-	// Verify structure can be created
-	if downloader.Priority != DownloadPriorityDpNormal {
-		t.Error("Priority not set correctly")
-	}
-}
+	// Download
+	func() {
+		defer func() { _ = recover() }()
+		result, err := downloader.Download(nil)
+		if err == nil && result != nil {
+			t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+		}
+	}()
 
-func TestIUpdateDownloader_EndDownload(t *testing.T) {
-	// Note: EndDownload requires a real download job.
-	// Calling with nil dispatch would cause panic.
-	// This method is covered through integration tests.
+	// BeginDownload
+	func() {
+		defer func() { _ = recover() }()
+		job, err := downloader.BeginDownload(nil)
+		if err == nil && job != nil {
+			t.Errorf("expected error or panic for nil dispatch, got job=%v, err=%v", job, err)
+		}
+	}()
 
-	downloader := &IUpdateDownloader{
-		disp: nil,
-	}
-
-	// Verify structure can be created
-	if downloader.disp != nil {
-		t.Error("disp should be nil")
-	}
+	// EndDownload
+	func() {
+		defer func() { _ = recover() }()
+		job := &IDownloadJob{disp: nil}
+		result, err := downloader.EndDownload(job)
+		if err == nil && result != nil {
+			t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+		}
+	}()
 }

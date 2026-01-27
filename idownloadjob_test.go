@@ -16,11 +16,7 @@ limitations under the License.
 
 package windowsupdate
 
-import (
-	"testing"
-
-	"github.com/go-ole/go-ole"
-)
+import "testing"
 
 func TestToIDownloadJob_NilDispatch(t *testing.T) {
 	result, err := toIDownloadJob(nil)
@@ -41,22 +37,30 @@ func TestIDownloadJob_StructureFields(t *testing.T) {
 	}
 }
 
-// COM tests for job methods
-func TestIDownloadJob_Methods(t *testing.T) {
-	ole.CoInitialize(0)
-	defer ole.CoUninitialize()
-
-	// Note: These methods require a real download job from BeginDownload.
-	// Testing with nil dispatch would cause panic, so we skip direct method calls.
-	// These methods are covered through integration tests or manual testing.
-
+func TestIDownloadJob_Methods_NilDispatch(t *testing.T) {
 	job := &IDownloadJob{
 		disp:        nil,
 		IsCompleted: false,
 	}
 
-	// Verify structure can be created
-	if job.IsCompleted {
-		t.Error("IsCompleted should be false")
-	}
+	// CleanUp
+	func() {
+		defer func() { _ = recover() }()
+		_ = job.CleanUp()
+	}()
+
+	// RequestAbort
+	func() {
+		defer func() { _ = recover() }()
+		_ = job.RequestAbort()
+	}()
+
+	// GetProgress
+	func() {
+		defer func() { _ = recover() }()
+		progress, err := job.GetProgress()
+		if err == nil && progress != nil {
+			t.Errorf("expected error or panic for nil dispatch, got progress=%v, err=%v", progress, err)
+		}
+	}()
 }

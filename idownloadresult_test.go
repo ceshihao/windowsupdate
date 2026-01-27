@@ -64,7 +64,30 @@ func TestIDownloadResult_ResultCodes(t *testing.T) {
 	}
 }
 
-// Note: toIDownloadResult and GetUpdateResult require actual download results
-// from COM objects. These are tested indirectly when downloads are performed
-// in integration tests. Unit testing these requires real Windows Update operations
-// which is not suitable for automated unit tests.
+func TestToIDownloadResult_NilDispatch(t *testing.T) {
+	defer func() {
+		// If a panic occurs when using a nil dispatch, that's acceptable
+		// as the COM layer may not handle nil pointers uniformly.
+		_ = recover()
+	}()
+
+	result, err := toIDownloadResult(nil)
+	if err == nil && result != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+	}
+}
+
+func TestIDownloadResult_GetUpdateResult_NilDispatch(t *testing.T) {
+	defer func() {
+		// Allow panic as a valid behavior when the underlying COM dispatch is nil.
+		_ = recover()
+	}()
+
+	dr := &IDownloadResult{
+		disp: nil,
+	}
+	updateResult, err := dr.GetUpdateResult(0)
+	if err == nil && updateResult != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", updateResult, err)
+	}
+}

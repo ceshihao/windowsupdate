@@ -16,11 +16,7 @@ limitations under the License.
 
 package windowsupdate
 
-import (
-	"testing"
-
-	"github.com/go-ole/go-ole"
-)
+import "testing"
 
 func TestToISearchJob_NilDispatch(t *testing.T) {
 	result, err := toISearchJob(nil)
@@ -41,22 +37,21 @@ func TestISearchJob_StructureFields(t *testing.T) {
 	}
 }
 
-// COM tests for job methods
-func TestISearchJob_Methods(t *testing.T) {
-	ole.CoInitialize(0)
-	defer ole.CoUninitialize()
-
-	// Note: These methods require a real search job from BeginSearch.
-	// Testing with nil dispatch would cause panic, so we skip direct method calls.
-	// These methods are covered through integration tests or manual testing.
-
+func TestISearchJob_Methods_NilDispatch(t *testing.T) {
 	job := &ISearchJob{
 		disp:        nil,
 		IsCompleted: true,
 	}
 
-	// Verify structure can be created
-	if !job.IsCompleted {
-		t.Error("IsCompleted should be true")
-	}
+	// CleanUp
+	func() {
+		defer func() { _ = recover() }()
+		_ = job.CleanUp()
+	}()
+
+	// RequestAbort
+	func() {
+		defer func() { _ = recover() }()
+		_ = job.RequestAbort()
+	}()
 }
