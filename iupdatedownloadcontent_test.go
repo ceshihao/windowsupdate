@@ -23,3 +23,14 @@ func TestIUpdateDownloadContent_StructureFields(t *testing.T) {
 		t.Errorf("DownloadUrl not set correctly, got %s", content.DownloadUrl)
 	}
 }
+
+func TestToIUpdateDownloadContent_NilDispatch(t *testing.T) {
+	defer func() {
+		_ = recover()
+	}()
+
+	result, err := toIUpdateDownloadContent(nil)
+	if err == nil && result != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+	}
+}

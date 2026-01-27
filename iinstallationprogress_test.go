@@ -53,3 +53,18 @@ func TestIInstallationProgress_PercentComplete(t *testing.T) {
 		t.Errorf("PercentComplete = %d, want 45", progress.PercentComplete)
 	}
 }
+
+func TestIInstallationProgress_GetUpdateResult_NilDispatch(t *testing.T) {
+	defer func() {
+		_ = recover()
+	}()
+
+	progress := &IInstallationProgress{
+		disp: nil,
+	}
+	result, err := progress.GetUpdateResult(0)
+	if err == nil && result != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+	}
+}
+

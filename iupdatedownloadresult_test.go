@@ -58,3 +58,14 @@ func TestIUpdateDownloadResult_ErrorCodes(t *testing.T) {
 		})
 	}
 }
+
+func TestToIUpdateDownloadResult_NilDispatch(t *testing.T) {
+	defer func() {
+		_ = recover()
+	}()
+
+	result, err := toIUpdateDownloadResult(nil)
+	if err == nil && result != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+	}
+}

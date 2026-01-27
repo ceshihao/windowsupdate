@@ -31,3 +31,14 @@ func TestIUpdateException_StructureFields(t *testing.T) {
 		t.Errorf("Message not set correctly, got %s", exception.Message)
 	}
 }
+
+func TestToIUpdateException_NilDispatch(t *testing.T) {
+	defer func() {
+		_ = recover()
+	}()
+
+	result, err := toIUpdateException(nil)
+	if err == nil && result != nil {
+		t.Errorf("expected error or panic for nil dispatch, got result=%v, err=%v", result, err)
+	}
+}
