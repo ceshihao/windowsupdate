@@ -17,6 +17,7 @@ package windowsupdate
 
 import (
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"unsafe"
 
