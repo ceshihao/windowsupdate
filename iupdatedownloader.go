@@ -88,7 +88,7 @@ func (iUpdateDownloader *IUpdateDownloader) BeginDownload(updates []*IUpdate) (*
 		return nil, err
 	}
 
-	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateDownloader.disp, "BeginDownload", nil, nil, nil))
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateDownloader.disp, "BeginDownload", newNoopDispatch(), newNoopDispatch(), nil))
 	if err != nil {
 		return nil, err
 	}
