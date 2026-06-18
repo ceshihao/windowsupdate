@@ -55,29 +55,27 @@ type noopCallback struct {
 // HRESULT values as uintptr (only the low 32 bits are significant).
 const (
 	hrSOK          = uintptr(0x00000000)
+	hrEPointer     = uintptr(0x80004003)
 	hrENoInterface = uintptr(0x80004002)
 	hrENotImpl     = uintptr(0x80004001)
 )
 
 func ncQueryInterface(this, iid, ppvObject uintptr) uintptr {
+	if ppvObject == 0 {
+		return hrEPointer
+	}
+	out := (*uintptr)(unsafe.Pointer(ppvObject))
 	if iid == 0 {
-		if ppvObject != 0 {
-			*(*uintptr)(unsafe.Pointer(ppvObject)) = 0
-		}
+		*out = 0
 		return hrENoInterface
 	}
 	guid := (*ole.GUID)(unsafe.Pointer(iid))
-	out := (*uintptr)(unsafe.Pointer(ppvObject))
 	if ole.IsEqualGUID(guid, ole.IID_IUnknown) || ole.IsEqualGUID(guid, ole.IID_IDispatch) {
 		atomic.AddInt32(&globalNoop.ref, 1)
-		if out != nil {
-			*out = this
-		}
+		*out = this
 		return hrSOK
 	}
-	if out != nil {
-		*out = 0
-	}
+	*out = 0
 	return hrENoInterface
 }
 
@@ -111,7 +109,8 @@ func ncGetIDsOfNames(this, riid, rgszNames, cNames, lcid, rgDispId uintptr) uint
 // and return S_OK. Completion is detected through EndXxx (blocking).
 func ncInvoke(this, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr uintptr) uintptr {
 	if pVarResult != 0 {
-		*(*uint16)(unsafe.Pointer(pVarResult)) = 0 // VT_EMPTY
+		v := (*ole.VARIANT)(unsafe.Pointer(pVarResult))
+		v.VT = ole.VT_EMPTY
 	}
 	return hrSOK
 }
