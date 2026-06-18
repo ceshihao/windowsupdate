@@ -52,7 +52,11 @@ jobs:
 
       - name: Run go vet
         shell: bash
-        run: go vet ./...
+        # -unsafeptr=false: COM vtable callbacks in olecallback.go inherently
+        # require uintptr -> unsafe.Pointer conversions (mandated by
+        # syscall.NewCallback). These are safe because the uintptr values are
+        # COM interface pointers passed by the Windows runtime.
+        run: go vet -unsafeptr=false ./...
 
       - name: Check formatting
         run: |
