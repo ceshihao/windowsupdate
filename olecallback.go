@@ -60,11 +60,16 @@ const (
 )
 
 func ncQueryInterface(this, iid, ppvObject uintptr) uintptr {
+	if iid == 0 {
+		if ppvObject != 0 {
+			*(*uintptr)(unsafe.Pointer(ppvObject)) = 0
+		}
+		return hrENoInterface
+	}
 	guid := (*ole.GUID)(unsafe.Pointer(iid))
 	out := (*uintptr)(unsafe.Pointer(ppvObject))
 	if ole.IsEqualGUID(guid, ole.IID_IUnknown) || ole.IsEqualGUID(guid, ole.IID_IDispatch) {
-		p := (*noopCallback)(unsafe.Pointer(this))
-		atomic.AddInt32(&p.ref, 1)
+		atomic.AddInt32(&globalNoop.ref, 1)
 		if out != nil {
 			*out = this
 		}
@@ -77,16 +82,14 @@ func ncQueryInterface(this, iid, ppvObject uintptr) uintptr {
 }
 
 func ncAddRef(this uintptr) uintptr {
-	p := (*noopCallback)(unsafe.Pointer(this))
-	return uintptr(uint32(atomic.AddInt32(&p.ref, 1)))
+	return uintptr(uint32(atomic.AddInt32(&globalNoop.ref, 1)))
 }
 
 func ncRelease(this uintptr) uintptr {
-	p := (*noopCallback)(unsafe.Pointer(this))
 	// Singleton object: it is never actually freed even if the count reaches
 	// zero. We still maintain the counter so the value returned to the COM
 	// caller is meaningful.
-	return uintptr(uint32(atomic.AddInt32(&p.ref, -1)))
+	return uintptr(uint32(atomic.AddInt32(&globalNoop.ref, -1)))
 }
 
 func ncGetTypeInfoCount(this, pctinfo uintptr) uintptr {
@@ -107,6 +110,9 @@ func ncGetIDsOfNames(this, riid, rgszNames, cNames, lcid, rgDispId uintptr) uint
 // ncInvoke : no-op body. WUA calls DISPID 0 on progress/completion; we ignore it
 // and return S_OK. Completion is detected through EndXxx (blocking).
 func ncInvoke(this, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr uintptr) uintptr {
+	if pVarResult != 0 {
+		*(*uint16)(unsafe.Pointer(pVarResult)) = 0 // VT_EMPTY
+	}
 	return hrSOK
 }
 
