@@ -1,6 +1,6 @@
 module github.com/ceshihao/windowsupdate/examples/query_update_history
 
-go 1.23
+go 1.24
 
 replace github.com/ceshihao/windowsupdate => ../../
 
