@@ -155,7 +155,7 @@ func (iUpdateInstaller *IUpdateInstaller) BeginInstall(updates []*IUpdate) (*IIn
 		return nil, err
 	}
 
-	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "BeginInstall", newNoopDispatch(), newNoopDispatch(), nil))
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "BeginInstall", newNoopCallback(), newNoopCallback(), nil))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func (iUpdateInstaller *IUpdateInstaller) BeginUninstall(updates []*IUpdate) (*I
 		return nil, err
 	}
 
-	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "BeginUninstall", newNoopDispatch(), newNoopDispatch(), nil))
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateInstaller.disp, "BeginUninstall", newNoopCallback(), newNoopCallback(), nil))
 	if err != nil {
 		return nil, err
 	}

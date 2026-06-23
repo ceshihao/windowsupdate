@@ -103,7 +103,7 @@ func (iUpdateSearcher *IUpdateSearcher) QueryHistoryAll() ([]*IUpdateHistoryEntr
 // BeginSearch begins an asynchronous search for updates.
 // https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-iupdatesearcher-beginsearch
 func (iUpdateSearcher *IUpdateSearcher) BeginSearch(criteria string) (*ISearchJob, error) {
-	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "BeginSearch", criteria, newNoopDispatch(), nil))
+	jobDisp, err := toIDispatchErr(oleutil.CallMethod(iUpdateSearcher.disp, "BeginSearch", criteria, newNoopCallback(), nil))
 	if err != nil {
 		return nil, err
 	}
