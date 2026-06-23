@@ -38,8 +38,8 @@ func TestNoopCallback_QueryInterface(t *testing.T) {
 	cb := getNoopVtbl()
 	this := uintptr(unsafe.Pointer(cb))
 
-	// A requested IID of IUnknown or IDispatch must succeed and return the object.
-	for _, iid := range []*ole.GUID{ole.IID_IUnknown, ole.IID_IDispatch} {
+	// A requested IID of IUnknown or a supported WUA callback IID must succeed and return the object.
+	for _, iid := range []*ole.GUID{ole.IID_IUnknown, iidSearchCompleted} {
 		var out uintptr
 		hr := ncQueryInterface(this, uintptr(unsafe.Pointer(iid)), uintptr(unsafe.Pointer(&out)))
 		if hr != hrSOK {
