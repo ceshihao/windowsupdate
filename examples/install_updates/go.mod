@@ -1,6 +1,6 @@
 module github.com/ceshihao/windowsupdate/examples/install_updates
 
-go 1.23
+go 1.24
 
 replace github.com/ceshihao/windowsupdate => ../../
 

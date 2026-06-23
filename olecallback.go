@@ -2,6 +2,7 @@
 
 /*
 Copyright 2022 Zheng Dayu
+Copyright 2026 Zheng Dayu
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -50,6 +51,10 @@ import (
 // Free-Threaded Marshaler (FTM): QueryInterface(IID_IMarshal) is delegated to the
 // FTM, which makes the object agile (callable directly from any apartment, no
 // proxy). BeginXxx then succeeds and progress is read by polling IXxxJob.GetProgress().
+// a non-NULL IUnknown* callback argument. Passing NULL (VT_NULL) makes them fail
+// with DISP_E_TYPEMISMATCH (0x80020005). newNoopDispatch returns a minimal
+// IDispatch whose Invoke does nothing (returns S_OK): completion is obtained
+// through the blocking EndXxx methods and progress through IXxxJob.GetProgress().
 //
 // The handler signatures are 100% uintptr because that is required by
 // syscall.NewCallback.
