@@ -17,8 +17,8 @@ package windowsupdate
 
 import "github.com/go-ole/go-ole"
 
-// newNoopDispatch is a no-op stub on non-Windows platforms.
+// newNoopCallback is a no-op stub on non-Windows platforms.
 // The COM async methods are only functional on Windows.
-func newNoopDispatch() *ole.IDispatch {
+func newNoopCallback() *ole.IDispatch {
 	return nil
 }

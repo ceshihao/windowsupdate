@@ -66,6 +66,15 @@ func (j *IDownloadJob) RequestAbort() error {
 	return err
 }
 
+// GetIsCompleted reads the live IsCompleted property of the job. Unlike the
+// IsCompleted struct field (captured once at construction time, hence always
+// false right after BeginDownload), this reflects the current state and is the
+// authoritative completion signal for the async download.
+// https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-idownloadjob-get_iscompleted
+func (j *IDownloadJob) GetIsCompleted() (bool, error) {
+	return toBoolErr(oleutil.GetProperty(j.disp, "IsCompleted"))
+}
+
 // GetProgress returns the current progress of the download.
 // https://learn.microsoft.com/en-us/windows/win32/api/wuapi/nf-wuapi-idownloadjob-getprogress
 func (j *IDownloadJob) GetProgress() (*IDownloadProgress, error) {
