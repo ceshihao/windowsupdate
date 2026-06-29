@@ -60,6 +60,20 @@ func TestNoopCallback_QueryInterface(t *testing.T) {
 	if out != 0 {
 		t.Errorf("QueryInterface(unsupported) out = 0x%x, want 0", out)
 	}
+
+	// Safety: ppvObject == 0 must return E_POINTER.
+	if hr := ncQueryInterface(this, uintptr(unsafe.Pointer(ole.IID_IUnknown)), 0); hr != hrEPointer {
+		t.Errorf("QueryInterface with nil ppvObject = 0x%x, want E_POINTER (0x80004003)", hr)
+	}
+
+	// Safety: iid == 0 must return E_NOINTERFACE and clear out.
+	out = uintptr(0xfff)
+	if hr := ncQueryInterface(this, 0, uintptr(unsafe.Pointer(&out))); hr != hrENoInterface {
+		t.Errorf("QueryInterface with nil iid = 0x%x, want E_NOINTERFACE", hr)
+	}
+	if out != 0 {
+		t.Errorf("QueryInterface with nil iid out = 0x%x, want 0", out)
+	}
 }
 
 func TestNoopCallback_AddRefRelease(t *testing.T) {

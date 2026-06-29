@@ -72,6 +72,7 @@ type noopCallback struct {
 // HRESULT values as uintptr (only the low 32 bits are significant).
 const (
 	hrSOK          = uintptr(0x00000000)
+	hrEPointer     = uintptr(0x80004003)
 	hrENoInterface = uintptr(0x80004002)
 )
 
@@ -89,8 +90,15 @@ var (
 )
 
 func ncQueryInterface(this, iid, ppvObject uintptr) uintptr {
-	guid := (*ole.GUID)(unsafe.Pointer(iid))
+	if ppvObject == 0 {
+		return hrEPointer
+	}
 	out := (*uintptr)(unsafe.Pointer(ppvObject))
+	if iid == 0 {
+		*out = 0
+		return hrENoInterface
+	}
+	guid := (*ole.GUID)(unsafe.Pointer(iid))
 	p := (*noopCallback)(unsafe.Pointer(this))
 
 	// Delegate IMarshal to the free-threaded marshaler so the object is agile and
@@ -106,15 +114,11 @@ func ncQueryInterface(this, iid, ppvObject uintptr) uintptr {
 		ole.IsEqualGUID(guid, iidInstallProgress) ||
 		ole.IsEqualGUID(guid, iidInstallCompleted) {
 		atomic.AddInt32(&p.ref, 1)
-		if out != nil {
-			*out = this
-		}
+		*out = this
 		return hrSOK
 	}
 
-	if out != nil {
-		*out = 0
-	}
+	*out = 0
 	return hrENoInterface
 }
 
