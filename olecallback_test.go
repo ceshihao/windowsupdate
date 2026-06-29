@@ -35,7 +35,7 @@ func TestNewNoopCallback_SharedSingleton(t *testing.T) {
 }
 
 func TestNoopCallback_QueryInterface(t *testing.T) {
-	cb := getNoopVtbl()
+	cb := &noopCallback{lpVtbl: getNoopVtbl(), ref: 1}
 	this := uintptr(unsafe.Pointer(cb))
 
 	// A requested IID of IUnknown or a supported WUA callback IID must succeed and return the object.

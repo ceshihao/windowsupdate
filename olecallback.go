@@ -51,11 +51,6 @@ import (
 // Free-Threaded Marshaler (FTM): QueryInterface(IID_IMarshal) is delegated to the
 // FTM, which makes the object agile (callable directly from any apartment, no
 // proxy). BeginXxx then succeeds and progress is read by polling IXxxJob.GetProgress().
-// a non-NULL IUnknown* callback argument. Passing NULL (VT_NULL) makes them fail
-// with DISP_E_TYPEMISMATCH (0x80020005). newNoopDispatch returns a minimal
-// IDispatch whose Invoke does nothing (returns S_OK): completion is obtained
-// through the blocking EndXxx methods and progress through IXxxJob.GetProgress().
-//
 // The handler signatures are 100% uintptr because that is required by
 // syscall.NewCallback.
 
@@ -151,10 +146,10 @@ func comQueryInterface(unk uintptr, iid *ole.GUID, out *uintptr) uintptr {
 }
 
 var (
-	noopVtbl    *noopCallbackVtbl
-	noopOnce    sync.Once
-	keepAliveMu sync.Mutex
-	keepAlive   []*noopCallback // pin the objects so the GC does not collect them while WUA holds them
+	noopVtbl     *noopCallbackVtbl
+	noopOnce     sync.Once
+	globalNoopCb *noopCallback
+	globalNoopMu sync.Once
 
 	modole32                          = syscall.NewLazyDLL("ole32.dll")
 	procCoCreateFreeThreadedMarshaler = modole32.NewProc("CoCreateFreeThreadedMarshaler")
@@ -172,30 +167,36 @@ func getNoopVtbl() *noopCallbackVtbl {
 	return noopVtbl
 }
 
-// newNoopCallback creates a minimal, agile IUnknown usable as a WUA async
-// callback. The object is pinned (keepAlive) so it is not collected while WUA
-// holds it. COM must already be initialized on the calling thread.
-func newNoopCallback() *ole.IUnknown {
-	cb := &noopCallback{lpVtbl: getNoopVtbl(), ref: 1}
-	keepAliveMu.Lock()
-	keepAlive = append(keepAlive, cb)
-	keepAliveMu.Unlock()
+// newNoopCallback returns a shared singleton usable as a WUA async callback.
+// Because the callback is completely stateless (ncInvoke is a no-op), a single
+// instance can be safely shared across all async calls. This avoids the
+// unbounded memory growth that would result from allocating a new callback on
+// every invocation. COM must already be initialized on the calling thread.
+//
+// The return type is *ole.IDispatch (not *ole.IUnknown) because go-ole's
+// oleutil.CallMethod only handles *IDispatch in its type switch; passing
+// *IUnknown causes a panic("unknown type"). The cast is safe: go-ole just
+// uses the pointer value to build a VT_DISPATCH VARIANT, and the WUA method
+// will QueryInterface our object for the actual callback interface it needs.
+func newNoopCallback() *ole.IDispatch {
+	globalNoopMu.Do(func() {
+		globalNoopCb = &noopCallback{lpVtbl: getNoopVtbl(), ref: 1}
 
-	// Aggregate the free-threaded marshaler so the callback is agile. The
-	// controlling unknown is the callback itself; the FTM delegates non-IMarshal
-	// QueryInterface calls back to us. If this fails we leave ftm=0 and fall back
-	// to standard marshaling (BeginXxx may then fail and the caller falls back to
-	// the synchronous path).
-	var ftm uintptr
-	if procCoCreateFreeThreadedMarshaler.Find() == nil {
-		ret, _, _ := procCoCreateFreeThreadedMarshaler.Call(
-			uintptr(unsafe.Pointer(cb)),
-			uintptr(unsafe.Pointer(&ftm)),
-		)
-		if ret == 0 {
-			cb.ftm = ftm
+		// Aggregate the free-threaded marshaler so the callback is agile. The
+		// controlling unknown is the callback itself; the FTM delegates non-IMarshal
+		// QueryInterface calls back to us. If this fails we leave ftm=0 and fall back
+		// to standard marshaling (BeginXxx may then fail and the caller falls back to
+		// the synchronous path).
+		var ftm uintptr
+		if procCoCreateFreeThreadedMarshaler.Find() == nil {
+			ret, _, _ := procCoCreateFreeThreadedMarshaler.Call(
+				uintptr(unsafe.Pointer(globalNoopCb)),
+				uintptr(unsafe.Pointer(&ftm)),
+			)
+			if ret == 0 {
+				globalNoopCb.ftm = ftm
+			}
 		}
-	}
-
-	return (*ole.IUnknown)(unsafe.Pointer(cb))
+	})
+	return (*ole.IDispatch)(unsafe.Pointer(globalNoopCb))
 }
